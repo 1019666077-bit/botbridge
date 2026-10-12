@@ -146,12 +146,26 @@
       var currentCode = null;
       var machines = [];
 
+      var SUPPORT = 'moying.studio@outlook.com';
       var MESSAGES = {
-        400: 'Please fill in both the email and the order id.',
-        403: 'This license is no longer active (it was refunded or cancelled). Contact us if you think that is wrong.',
-        404: 'We could not match that email and order id. Double-check both against your Waffo receipt.',
+        400: 'Please fill in both the email and the order id exactly as they appear on your Waffo receipt.',
+        403: 'This license is no longer active — it was refunded, cancelled or has expired. If you think that is wrong, write to ' + SUPPORT + '.',
+        404: 'We could not match that email and order id. Double-check both against your Waffo receipt, or write to ' + SUPPORT + '.',
         429: 'Too many attempts just now — please wait a minute and try again.',
+        500: 'Something went wrong on our side. Please try again in a moment, or write to ' + SUPPORT + '.',
       };
+
+      var UNBIND_MESSAGES = {
+        403: 'This license is no longer active, so it cannot be unbound. Write to ' + SUPPORT + ' if that seems wrong.',
+        404: 'That key is no longer recognised. Reload the page and try again, or write to ' + SUPPORT + '.',
+        429: MESSAGES[429],
+      };
+
+      function errorText(status, body, messages) {
+        if (body && typeof body.message === 'string' && body.message) return body.message;
+        var table = messages || MESSAGES;
+        return table[status] || 'Something went wrong. Please try again in a moment, or write to ' + SUPPORT + '.';
+      }
 
       function showError(text) {
         errorEl.textContent = text;
@@ -196,7 +210,7 @@
           });
           var body = await res.json().catch(function () { return {}; });
           if (!res.ok) {
-            showError(MESSAGES[res.status] || 'Could not unbind that machine. Please try again in a moment.');
+            showError(errorText(res.status, body, UNBIND_MESSAGES));
             btn.disabled = false;
             btn.textContent = 'Unbind';
             return;
@@ -236,7 +250,7 @@
           );
           var body = await res.json().catch(function () { return {}; });
           if (!res.ok) {
-            showError(MESSAGES[res.status] || 'Something went wrong on our side. Please try again in a moment.');
+            showError(errorText(res.status, body));
             return;
           }
           license = body.licenseJson || null;

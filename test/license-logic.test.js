@@ -195,3 +195,118 @@ test('buildLicenseJson emits the Helper contract with expiresAt', () => {
     orderId: 'ord_1',
   });
 });
+
+// ---------------------------------------------------------------------------
+// Hardening: input normalization, refund stickiness, monotonic expiry
+// ---------------------------------------------------------------------------
+
+import {
+  normalizeEmail,
+  normalizeOrderId,
+  isRefundEvent,
+  applyEvent,
+} from '../lib/license-logic.js';
+
+test('normalizeEmail trims, lowercases and collapses blanks to null', () => {
+  assert.equal(normalizeEmail('  Buyer@Example.COM '), 'buyer@example.com');
+  assert.equal(normalizeEmail(''), null);
+  assert.equal(normalizeEmail('   '), null);
+  assert.equal(normalizeEmail(null), null);
+  assert.equal(normalizeEmail(42), null);
+});
+
+test('normalizeOrderId trims and strips interior whitespace typos', () => {
+  assert.equal(normalizeOrderId('  ord_1  '), 'ord_1');
+  assert.equal(normalizeOrderId('ORD test 1'), 'ORDtest1');
+  assert.equal(normalizeOrderId('ord_\n2\t'), 'ord_2');
+  assert.equal(normalizeOrderId('   '), null);
+  assert.equal(normalizeOrderId(undefined), null);
+});
+
+test('isRefundEvent flags refund deliveries so a refund stays terminal', () => {
+  assert.equal(isRefundEvent('refund.succeeded'), true);
+  assert.equal(isRefundEvent('RefundSucceeded'), true);
+  assert.equal(isRefundEvent('subscription.canceled'), false);
+  assert.equal(isRefundEvent(''), false);
+});
+
+test('applyEvent mints a record on first activation', () => {
+  const { record } = applyEvent(null, {
+    order: { orderId: 'ord_1', email: 'a@b.com', productId: PROD, productName: 'CC Helper Pro', expiresAt: '2027-01-01T00:00:00.000Z' },
+    action: 'activate',
+    nowIso: '2026-10-12T00:00:00.000Z',
+    newCode: 'CCH-AAAA-BBBB-CCCC',
+  });
+  assert.equal(record.status, 'active');
+  assert.equal(record.code, 'CCH-AAAA-BBBB-CCCC');
+  assert.equal(record.expiresAt, '2027-01-01T00:00:00.000Z');
+  assert.equal(record.createdAt, '2026-10-12T00:00:00.000Z');
+  assert.equal(record.updatedAt, '2026-10-12T00:00:00.000Z');
+});
+
+test('applyEvent extends to a later period but never moves expiry backwards', () => {
+  const base = { orderId: 'ord_1', code: 'CCH-AAAA-BBBB-CCCC', status: 'active', expiresAt: '2027-06-01T00:00:00.000Z' };
+  const forward = applyEvent(base, {
+    order: { orderId: 'ord_1', email: null, productId: PROD, productName: null, expiresAt: '2028-06-01T00:00:00.000Z' },
+    action: 'extend',
+    nowIso: '2026-10-12T00:00:00.000Z',
+    newCode: 'CCH-UNUSED-0000-0000',
+  }).record;
+  assert.equal(forward.expiresAt, '2028-06-01T00:00:00.000Z');
+  assert.equal(forward.code, 'CCH-AAAA-BBBB-CCCC', 'renewal keeps the original code');
+
+  const backward = applyEvent(base, {
+    order: { orderId: 'ord_1', email: null, productId: PROD, productName: null, expiresAt: '2026-01-01T00:00:00.000Z' },
+    action: 'extend',
+    nowIso: '2026-10-12T00:00:00.000Z',
+    newCode: 'CCH-UNUSED-0000-0000',
+  }).record;
+  assert.equal(backward.expiresAt, '2027-06-01T00:00:00.000Z', 'a stale/out-of-order renewal must not shorten the license');
+});
+
+test('applyEvent revokes on cancel but a recover can reactivate it', () => {
+  const active = { orderId: 'ord_1', code: 'CCH-AAAA-BBBB-CCCC', status: 'active', expiresAt: '2027-06-01T00:00:00.000Z' };
+  const canceled = applyEvent(active, {
+    order: { orderId: 'ord_1' }, action: 'revoke', nowIso: '2026-10-12T00:00:00.000Z', newCode: 'x',
+  }).record;
+  assert.equal(canceled.status, 'revoked');
+
+  const recovered = applyEvent(canceled, {
+    order: { orderId: 'ord_1', expiresAt: '2028-06-01T00:00:00.000Z' }, action: 'extend',
+    nowIso: '2026-10-13T00:00:00.000Z', newCode: 'x',
+  }).record;
+  assert.equal(recovered.status, 'active');
+  assert.equal(recovered.expiresAt, '2028-06-01T00:00:00.000Z');
+});
+
+test('applyEvent keeps a refunded order revoked even if a later event arrives', () => {
+  const active = { orderId: 'ord_1', code: 'CCH-AAAA-BBBB-CCCC', status: 'active', expiresAt: '2027-06-01T00:00:00.000Z' };
+  const refunded = applyEvent(active, {
+    order: { orderId: 'ord_1' }, action: 'revoke', isRefund: true, nowIso: '2026-10-12T00:00:00.000Z', newCode: 'x',
+  }).record;
+  assert.equal(refunded.status, 'revoked');
+  assert.equal(refunded.refunded, true);
+
+  const lateActivation = applyEvent(refunded, {
+    order: { orderId: 'ord_1', expiresAt: '2029-01-01T00:00:00.000Z' }, action: 'activate',
+    nowIso: '2026-10-14T00:00:00.000Z', newCode: 'x',
+  }).record;
+  assert.equal(lateActivation.status, 'revoked', 'a refund is terminal for that order');
+});
+
+test('applyEvent keeps a test license capped and sticky across renewals', () => {
+  const now = Date.parse('2026-10-12T00:00:00Z');
+  const first = applyEvent(null, {
+    order: { orderId: 'ord_t', email: null, productId: TEST_PROD, productName: null, expiresAt: '2099-01-01T00:00:00.000Z' },
+    action: 'activate', isTest: true, nowIso: new Date(now).toISOString(), newCode: 'CCH-TEST-0000-0001',
+  }).record;
+  assert.equal(first.isTest, true);
+  assert.ok(Date.parse(first.expiresAt) <= now + 7 * 86400000 + 1000);
+
+  const renewed = applyEvent(first, {
+    order: { orderId: 'ord_t', expiresAt: '2099-01-01T00:00:00.000Z' },
+    action: 'extend', nowIso: new Date(now + 86400000).toISOString(), newCode: 'x',
+  }).record;
+  assert.equal(renewed.isTest, true, 'isTest is sticky');
+  assert.ok(Date.parse(renewed.expiresAt) <= now + 86400000 + 7 * 86400000 + 1000);
+});
