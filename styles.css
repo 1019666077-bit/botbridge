@@ -547,3 +547,26 @@ code {
   .product-card:hover,
   .cta:hover { transform: none; }
 }
+
+/* Brand positioning */
+.lede.lead-zh,
+.lead-zh {
+  font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  color: var(--fg);
+  margin: 0 0 12px;
+  max-width: 28ch;
+}
+.lede.zh.lead-zh { color: var(--fg); opacity: 1; }
+.section-note {
+  margin: -8px 0 20px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.brand-line {
+  margin-top: -4px !important;
+  margin-bottom: 14px !important;
+  color: var(--muted);
+}
