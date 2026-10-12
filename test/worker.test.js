@@ -10,92 +10,21 @@ import worker, {
   handleDeactivate,
 } from '../worker.js';
 import { mintCode } from '../lib/cch-code.js';
-
-const PROD = 'PROD_4rpv1XspFZwARrTFDfvlmY';
-const OTHER_PROD = 'PROD_somethingelse';
-const TEST_PROD = 'PROD_4H2br9vXCUBpKU7kKBFtBF';
-const EMAIL = 'buyer@example.com';
-
-const { publicKey, privateKey } = generateKeyPairSync('rsa', {
-  modulusLength: 2048,
-  publicKeyEncoding: { type: 'spki', format: 'pem' },
-  privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
-});
-
-class FakeKV {
-  constructor() {
-    this.map = new Map();
-  }
-  async get(key, type) {
-    const v = this.map.get(key);
-    if (v === undefined) return null;
-    return type === 'json' ? JSON.parse(v) : v;
-  }
-  async put(key, value) {
-    this.map.set(key, value);
-  }
-  async delete(key) {
-    this.map.delete(key);
-  }
-}
-
-function makeEnv(overrides = {}) {
-  return {
-    LICENSES: new FakeKV(),
-    WAFFO_WEBHOOK_PUBLIC_KEY: publicKey,
-    CC_HELPER_PRODUCT_ID: PROD,
-    ASSETS: { fetch: async () => new Response('asset', { status: 200 }) },
-    ...overrides,
-  };
-}
-
-function signedRequest(event, { key = privateKey, id } = {}) {
-  const body = JSON.stringify({ id: id ?? event.id, ...event });
-  const t = Math.floor(Date.now() / 1000);
-  const sig = createSign('RSA-SHA256').update(`${t}.${body}`).sign(key, 'base64');
-  return new Request('https://botbridge.dev/api/waffo/webhook', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-waffo-signature': `t=${t},v1=${sig}` },
-    body,
-  });
-}
-
-function event(eventType, data = {}, extra = {}) {
-  return {
-    id: extra.id ?? crypto.randomUUID(),
-    eventType,
-    data: {
-      orderId: 'ord_1',
-      buyerEmail: EMAIL,
-      productName: 'CC Helper Pro',
-      productMetadata: { productId: PROD },
-      ...data,
-    },
-    ...extra,
-  };
-}
-
-function claimUrl(email = EMAIL, orderId = 'ord_1') {
-  return new Request(`https://botbridge.dev/api/license/claim?email=${encodeURIComponent(email)}&orderId=${orderId}`);
-}
-
-function jsonReq(path, body) {
-  return new Request(`https://botbridge.dev${path}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-}
-
-// Mint an active license through the real webhook path and return its code.
-async function seedLicense(env, { orderId = 'ord_1', email = EMAIL, periodEnd = '2027-10-12' } = {}) {
-  const ev = event('subscription.activated', { orderId, buyerEmail: email, currentPeriodEnd: periodEnd }, { id: `evt_${orderId}` });
-  const res = await handleWebhook(signedRequest(ev, { id: `evt_${orderId}` }), env);
-  assert.equal(res.status, 200);
-  const record = await env.LICENSES.get(`order:${orderId}`, 'json');
-  assert.ok(record && record.code, 'webhook should have minted a code');
-  return record.code;
-}
+import {
+  PROD,
+  OTHER_PROD,
+  TEST_PROD,
+  EMAIL,
+  publicKey,
+  privateKey,
+  FakeKV,
+  makeEnv,
+  signedRequest,
+  event,
+  claimUrl,
+  jsonReq,
+  seedLicense,
+} from './helpers.js';
 
 test('activated webhook mints a code that claim and lookup both return', async () => {
   const env = makeEnv();

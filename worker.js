@@ -9,6 +9,10 @@
 //   POST /api/pro/activate            bind a machine to a code (per-product cap)
 //   POST /api/pro/validate            code + machineId -> valid? (Helper poll)
 //   POST /api/pro/deactivate          unbind a machine from a code
+//   POST /api/pro/approval            Pro: open a 24h remote-approval token (Helper)
+//   GET  /api/pro/approval            Pro: poll that token (Helper)
+//   GET  /<approvalPath>              phone page: approve/cancel one task
+//   POST /api/pro/approval/answer     the page's Continue/Cancel buttons
 //   POST /api/license/admin/reissue   operator recovery for a missed webhook
 //
 // Secrets / vars:
@@ -36,25 +40,49 @@ import {
   isRefundEvent,
   normalizeEmail,
   normalizeOrderId,
+  SUPPORT_EMAIL,
 } from './lib/license-logic.js';
 import { resolveProducts, productForOrder, productForCode } from './lib/products.js';
 import { verifyWebhookSignature } from './lib/waffo-signature.js';
+import {
+  APPROVAL_TTL_MS,
+  APPROVAL_KV_TTL_SECONDS,
+  MAX_TITLE_LEN,
+  MAX_TASK_ID_LEN,
+  approvalStatus,
+  mintApprovalToken,
+  normalizeScreenshot,
+  renderApprovalPage,
+} from './lib/approval-logic.js';
 
 const DEDUPE_TTL_SECONDS = 7 * 24 * 60 * 60;
 const CLAIM_LIMIT_PER_MINUTE = 20;
 const CLAIM_ORDER_LIMIT_PER_MINUTE = 8;
 const MACHINE_LIMIT_PER_MINUTE = 30;
 const VALIDATE_CODE_LIMIT_PER_MINUTE = 60;
+const APPROVAL_LIMIT_PER_MINUTE = 20;
+const APPROVAL_CODE_LIMIT_PER_MINUTE = 20;
+const APPROVAL_ANSWER_LIMIT_PER_MINUTE = 60;
+// A Helper polls every few seconds; this only stops runaway loops.
+const APPROVAL_POLL_LIMIT_PER_MINUTE = 300;
 const MACHINE_ID_RE = /^[A-Za-z0-9_.:-]{1,200}$/;
 const MAX_ORDER_ID_LEN = 100;
 const MAX_EMAIL_LEN = 254;
-const SUPPORT_EMAIL = 'moying.studio@outlook.com';
 const BIND_ATTEMPTS = 5;
+const APPROVAL_ANSWER_PATH = '/api/pro/approval/answer';
+const DEFAULT_APPROVAL_PATH = '/cc-helper/approve';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
+  });
+}
+
+function htmlResponse(body, status = 200) {
+  return new Response(body, {
+    status,
+    headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' },
   });
 }
 
@@ -285,6 +313,23 @@ async function readJsonBody(request) {
   }
 }
 
+/**
+ * The approval buttons are a plain HTML form, so accept both
+ * application/x-www-form-urlencoded and JSON from the same endpoint.
+ */
+async function readFormOrJson(request) {
+  const type = request.headers.get('content-type') || '';
+  if (type.includes('application/json')) return readJsonBody(request);
+  try {
+    const text = await request.text();
+    if (!text.trim()) return null;
+    if (text.trim().startsWith('{')) return JSON.parse(text);
+    return Object.fromEntries(new URLSearchParams(text));
+  } catch {
+    return null;
+  }
+}
+
 function machineIdFrom(body) {
   return typeof body?.machineId === 'string' ? body.machineId.trim() : '';
 }
@@ -317,6 +362,27 @@ async function readMachines(env, orderId, record) {
 }
 
 const machinesToRecord = (machines) => ({ machines });
+
+/**
+ * Resolve an already-checksum-verified code to a license that is active and
+ * bound to `machineId` — exactly the rules /api/pro/validate enforces. Callers
+ * own their own rate limiting; this only reads KV. Keeping this in one place
+ * matters: the approval API must never be laxer than the validation gate.
+ *
+ * @returns {{ok: true, orderId, record, machines}
+ *          |{ok: false, reason: 'unknown_code'|'inactive'|'machine_not_bound', record?}}
+ */
+async function loadBoundActiveLicense(env, code, machineId) {
+  const orderId = await env.LICENSES.get(`code:${code}`);
+  const record = orderId ? await env.LICENSES.get(`order:${orderId}`, 'json') : null;
+  if (!record) return { ok: false, reason: 'unknown_code', orderId: null };
+  if (!isActive(record, Date.now())) return { ok: false, reason: 'inactive', record, orderId };
+  const machines = await readMachines(env, orderId, record);
+  if (!isMachineBound(machinesToRecord(machines), machineId)) {
+    return { ok: false, reason: 'machine_not_bound', record, orderId };
+  }
+  return { ok: true, orderId, record, machines };
+}
 
 /**
  * Read-modify-write the machine list with an optimistic check: after writing we
@@ -421,24 +487,22 @@ export async function handleValidate(request, env) {
     return json({ error: 'rate_limited' }, 429);
   }
 
-  const orderId = await env.LICENSES.get(`code:${check.code}`);
-  const record = orderId ? await env.LICENSES.get(`order:${orderId}`, 'json') : null;
-  if (!record) return json({ valid: false, status: 'unknown', reason: 'unknown_code', expiresAt: null });
-
-  const now = Date.now();
-  if (!isActive(record, now)) {
-    const reason = record.status && record.status !== 'active' ? record.status : 'expired';
-    return json({
-      valid: false,
-      status: record.status || 'unknown',
-      reason,
-      expiresAt: record.expiresAt || null,
-      isTest: !!record.isTest,
-    });
-  }
-
-  const machines = await readMachines(env, orderId, record);
-  if (!isMachineBound(machinesToRecord(machines), machineId)) {
+  const found = await loadBoundActiveLicense(env, check.code, machineId);
+  if (!found.ok) {
+    const record = found.record || {};
+    if (found.reason === 'unknown_code') {
+      return json({ valid: false, status: 'unknown', reason: 'unknown_code', expiresAt: null });
+    }
+    if (found.reason === 'inactive') {
+      const reason = record.status && record.status !== 'active' ? record.status : 'expired';
+      return json({
+        valid: false,
+        status: record.status || 'unknown',
+        reason,
+        expiresAt: record.expiresAt || null,
+        isTest: !!record.isTest,
+      });
+    }
     return json({
       valid: false,
       status: 'active',
@@ -450,9 +514,10 @@ export async function handleValidate(request, env) {
 
   // Refresh lastSeenAt on the machines key only; never touch the order record,
   // so a revalidation cannot race a refund webhook.
-  const nowIso = new Date(now).toISOString();
-  const refreshed = bindMachine(machinesToRecord(machines), machineId, nowIso).machines;
-  await env.LICENSES.put(`machines:${orderId}`, JSON.stringify(refreshed));
+  const record = found.record;
+  const nowIso = new Date().toISOString();
+  const refreshed = bindMachine(machinesToRecord(found.machines), machineId, nowIso).machines;
+  await env.LICENSES.put(`machines:${found.orderId}`, JSON.stringify(refreshed));
 
   return json({
     valid: true,
@@ -484,6 +549,229 @@ export async function handleDeactivate(request, env) {
 
   logEvent({ event: 'license.deactivate', outcome: 'ok', orderId: found.orderId, removed: unbound.removed });
   return json({ ok: true, removed: unbound.removed, machines: unbound.machines });
+}
+
+// ---------------------------------------------------------------------------
+// Pro remote approval: the Helper asks for a task approval, the buyer answers
+// it on their phone, the Helper polls the answer.
+//
+//   POST /api/pro/approval          Helper opens a 24h token (Pro gate, see
+//                                   loadBoundActiveLicense -> same rules as
+//                                   /api/pro/validate)
+//   GET  /<approvalPath>            the phone page (Continue / Cancel)
+//   POST /api/pro/approval/answer   the buttons: single-use approve/cancel
+//   GET  /api/pro/approval          Helper polls the token's status
+//
+// The token is the only capability the phone needs, so it is opaque and the
+// poll additionally demands the license code + machine that opened it.
+// ---------------------------------------------------------------------------
+
+/** Map a Pro-gate failure onto the buyer/Helper-facing HTTP response. */
+function approvalGateError(found) {
+  if (found.reason === 'unknown_code') {
+    return apiError(404, 'unknown_code', 'That license code is not registered.');
+  }
+  if (found.reason === 'inactive') {
+    return apiError(403, 'inactive', 'This license is no longer active — it was refunded, cancelled or has expired.');
+  }
+  return apiError(403, 'machine_not_bound', 'This machine is not activated for that license.');
+}
+
+const SCREENSHOT_ERRORS = {
+  screenshot_too_large: 'That screenshot is too large — keep it under 200 KB or send a URL instead.',
+  invalid_screenshot_url: 'That screenshot URL is not usable — send an http(s) link.',
+  invalid_screenshot: 'That screenshot could not be read — send base64 image data or a URL.',
+};
+
+export async function handleApprovalCreate(request, env) {
+  const body = await readJsonBody(request);
+  if (!body) return apiError(400, 'invalid_json', 'Send a JSON body with the license code and machine id.');
+
+  const machineId = machineIdFrom(body);
+  if (!machineId) return apiError(400, 'missing_machine_id', 'This approval request did not identify a machine.');
+  if (!MACHINE_ID_RE.test(machineId)) return apiError(400, 'invalid_machine_id', 'That machine id is not valid.');
+
+  const taskId = typeof body.taskId === 'string' ? body.taskId.trim() : '';
+  if (!taskId) return apiError(400, 'missing_task_id', 'This approval request is missing its task id.');
+  if (taskId.length > MAX_TASK_ID_LEN) return apiError(400, 'invalid_task_id', 'That task id is too long.');
+
+  const title = typeof body.title === 'string' ? body.title.trim() : '';
+  if (!title) return apiError(400, 'missing_title', 'This approval request is missing its title.');
+  if (title.length > MAX_TITLE_LEN) return apiError(400, 'invalid_title', 'That title is too long to display.');
+
+  if (!(await allowRequest(env, request, 'approval', APPROVAL_LIMIT_PER_MINUTE, 60))) {
+    return apiError(429, 'rate_limited', 'Too many approval requests just now — please wait a minute and try again.');
+  }
+
+  const product = productForCode(body.code || '', resolveProducts(env));
+  const check = product ? verifyCode(body.code || '', { prefix: product.codePrefix }) : { valid: false };
+  if (!check.valid) {
+    logEvent({ event: 'license.approval', outcome: 'invalid_code' });
+    return apiError(400, 'invalid_code', 'That license code is not valid.');
+  }
+
+  // Slow repeated approvals for one code without penalising other buyers.
+  if (!(await allowKey(env, 'approval-code', check.code, APPROVAL_CODE_LIMIT_PER_MINUTE, 60))) {
+    return apiError(429, 'rate_limited', 'Too many approval requests for this license — please wait a minute.');
+  }
+
+  // The Pro gate: same rules as /api/pro/validate.
+  const found = await loadBoundActiveLicense(env, check.code, machineId);
+  if (!found.ok) {
+    logEvent({
+      event: 'license.approval',
+      outcome: found.reason,
+      orderId: found.orderId || null,
+      code: codeHint(check.code),
+      machine: machineId,
+    });
+    return approvalGateError(found);
+  }
+
+  const shot = normalizeScreenshot(body);
+  if (!shot.ok) return apiError(400, shot.error, SCREENSHOT_ERRORS[shot.error] || 'That screenshot could not be read.');
+
+  const token = mintApprovalToken();
+  const nowMs = Date.now();
+  const expiresAt = new Date(nowMs + APPROVAL_TTL_MS).toISOString();
+  const approval = {
+    token,
+    code: check.code,
+    orderId: found.orderId,
+    machineId,
+    taskId,
+    title,
+    screenshotUrl: shot.screenshotUrl || null,
+    hasScreenshot: !!shot.dataUrl,
+    status: 'pending',
+    createdAt: new Date(nowMs).toISOString(),
+    expiresAt,
+    answeredAt: null,
+  };
+
+  await env.LICENSES.put(`approval:${token}`, JSON.stringify(approval), { expirationTtl: APPROVAL_KV_TTL_SECONDS });
+  if (shot.dataUrl) {
+    await env.LICENSES.put(`approval:${token}:shot`, shot.dataUrl, { expirationTtl: APPROVAL_KV_TTL_SECONDS });
+  }
+
+  const origin = new URL(request.url).origin;
+  const approvalPath = product.approvalPath || DEFAULT_APPROVAL_PATH;
+  logEvent({
+    event: 'license.approval',
+    outcome: 'created',
+    orderId: found.orderId,
+    product: product.key,
+    code: codeHint(check.code),
+    machine: machineId,
+  });
+  return json({
+    token,
+    expiresAt,
+    pollUrl: `${origin}/api/pro/approval?t=${encodeURIComponent(token)}&code=${encodeURIComponent(check.code)}&machineId=${encodeURIComponent(machineId)}`,
+    approveUrl: `${origin}${approvalPath}?t=${encodeURIComponent(token)}`,
+  });
+}
+
+/** The phone-facing page: show the task, or explain why this link is dead. */
+export async function handleApprovalPage(request, env) {
+  const token = (new URL(request.url).searchParams.get('t') || '').trim();
+  if (!token) return htmlResponse(renderApprovalPage({ state: 'missing' }), 404);
+
+  const record = await env.LICENSES.get(`approval:${token}`, 'json');
+  if (!record) return htmlResponse(renderApprovalPage({ state: 'expired' }), 404);
+
+  const status = approvalStatus(record, Date.now());
+  if (status === 'expired') return htmlResponse(renderApprovalPage({ state: 'expired' }), 404);
+
+  let screenshotSrc = record.screenshotUrl || null;
+  if (!screenshotSrc && record.hasScreenshot) {
+    screenshotSrc = await env.LICENSES.get(`approval:${token}:shot`);
+  }
+
+  logEvent({ event: 'license.approval', outcome: 'page', orderId: record.orderId || null, status });
+  return htmlResponse(
+    renderApprovalPage({
+      state: status,
+      title: record.title,
+      screenshotSrc,
+      token,
+      actionPath: APPROVAL_ANSWER_PATH,
+    }),
+  );
+}
+
+/** The Continue/Cancel buttons. Single-use: the first answer is the answer. */
+export async function handleApprovalAnswer(request, env) {
+  const body = await readFormOrJson(request);
+  const token = typeof body?.t === 'string' ? body.t.trim() : '';
+  const action = typeof body?.action === 'string' ? body.action.trim().toLowerCase() : '';
+
+  if (!token) return htmlResponse(renderApprovalPage({ state: 'missing' }), 400);
+  if (action !== 'approve' && action !== 'cancel') {
+    return htmlResponse(renderApprovalPage({ state: 'missing' }), 400);
+  }
+
+  if (!(await allowRequest(env, request, 'approval-answer', APPROVAL_ANSWER_LIMIT_PER_MINUTE, 60))) {
+    return htmlResponse(renderApprovalPage({ state: 'missing' }), 429);
+  }
+
+  const record = await env.LICENSES.get(`approval:${token}`, 'json');
+  if (!record) return htmlResponse(renderApprovalPage({ state: 'expired' }), 404);
+
+  const status = approvalStatus(record, Date.now());
+  if (status === 'expired') {
+    logEvent({ event: 'license.approval', outcome: 'expired', orderId: record.orderId || null, code: codeHint(record.code) });
+    return htmlResponse(renderApprovalPage({ state: 'expired' }), 404);
+  }
+  if (status !== 'pending') {
+    logEvent({
+      event: 'license.approval',
+      outcome: 'already_answered',
+      orderId: record.orderId || null,
+      code: codeHint(record.code),
+      status,
+    });
+    return htmlResponse(renderApprovalPage({ state: status, alreadyAnswered: true }));
+  }
+
+  const answer = action === 'approve' ? 'approved' : 'cancelled';
+  await env.LICENSES.put(
+    `approval:${token}`,
+    JSON.stringify({ ...record, status: answer, answeredAt: new Date().toISOString() }),
+    { expirationTtl: APPROVAL_KV_TTL_SECONDS },
+  );
+
+  // Read back so a double submit cannot silently overwrite the first answer: if
+  // a concurrent answer landed first, that one is shown and reported instead.
+  const after = await env.LICENSES.get(`approval:${token}`, 'json');
+  const settled = after && (after.status === 'approved' || after.status === 'cancelled') ? after.status : answer;
+  logEvent({ event: 'license.approval', outcome: settled, orderId: record.orderId || null, code: codeHint(record.code) });
+  return htmlResponse(renderApprovalPage({ state: settled, alreadyAnswered: settled !== answer }));
+}
+
+/** The Helper's poll. Needs the token *and* the license + machine that own it. */
+export async function handleApprovalPoll(request, env) {
+  const url = new URL(request.url);
+  const token = (url.searchParams.get('t') || '').trim();
+  if (!token) return apiError(400, 'missing_token', 'This poll is missing its approval token.');
+
+  if (!(await allowRequest(env, request, 'approval-poll', APPROVAL_POLL_LIMIT_PER_MINUTE, 60))) {
+    return apiError(429, 'rate_limited', 'Too many polls just now — please slow down and retry.');
+  }
+
+  const code = (url.searchParams.get('code') || '').trim().toUpperCase();
+  const machineId = (url.searchParams.get('machineId') || '').trim();
+
+  const record = await env.LICENSES.get(`approval:${token}`, 'json');
+  // Unknown and expired tokens answer identically, so guessing tokens reveals
+  // nothing about which approvals exist.
+  if (!record) return json({ status: 'expired', expiresAt: null });
+
+  if (code !== record.code || !machineId || machineId !== record.machineId) {
+    return apiError(404, 'not_found', 'That approval does not belong to this license and machine.');
+  }
+
+  return json({ status: approvalStatus(record, Date.now()), expiresAt: record.expiresAt || null });
 }
 
 export async function handleLookup(request, env) {
@@ -617,6 +905,21 @@ export default {
       if (pathname === '/api/license/admin/reissue') {
         if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
         return await handleAdminReissue(request, env);
+      }
+      if (pathname === '/api/pro/approval') {
+        if (request.method === 'POST') return await handleApprovalCreate(request, env);
+        if (request.method === 'GET') return await handleApprovalPoll(request, env);
+        return json({ error: 'method_not_allowed' }, 405);
+      }
+      if (pathname === APPROVAL_ANSWER_PATH) {
+        if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+        return await handleApprovalAnswer(request, env);
+      }
+      // Each product's approvalPath is served here, ahead of the ASSETS
+      // fallback, so the page can be rendered from live KV state.
+      if (resolveProducts(env).some((p) => (p.approvalPath || DEFAULT_APPROVAL_PATH) === pathname)) {
+        if (request.method !== 'GET') return json({ error: 'method_not_allowed' }, 405);
+        return await handleApprovalPage(request, env);
       }
       if (pathname === '/api/pro/activate' || pathname === '/api/pro/validate' || pathname === '/api/pro/deactivate') {
         if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);

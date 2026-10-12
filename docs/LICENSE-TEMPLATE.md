@@ -18,6 +18,7 @@ CC Helper Pro 是第 1 条商品配置，可作为抄写范本。
 | `testProductIds` | ✅ | Waffo **Test Mode** 商品 id；命中即发测试码（7 天封顶），可为空数组 |
 | `maxMachines` | ✅ | `/api/pro/activate` 强制的一码机器上限 |
 | `successPath` | ✅ | 买家领码页路径（同时用作 Waffo 的 Success / Return URL） |
+| `approvalPath` | ➖ | 手机端远程批准页路径（默认回退 `/cc-helper/approve`）；见第 4 节 |
 | `envPrefix` | ✅ | 可选覆盖用的环境变量前缀（如 `WEBCAM`） |
 | `productName` | ➖ | 精确商品名兜底过滤（Waffo payload 有时只有名字没有 id） |
 | `requireProductId` | ➖ | `true` 时，事件里没有 productId 也拒绝（多商品店铺建议开启） |
@@ -63,6 +64,7 @@ CC Helper Pro 是第 1 条商品配置，可作为抄写范本。
     testProductIds: ['PROD_yyyyyyyyyyyyyyyyyyyyyy'], // Waffo Test（可为 []）
     maxMachines: 1,
     successPath: '/webcam/success/',
+    approvalPath: '/webcam/approve',   // 远程批准页；不填则用 /cc-helper/approve
     envPrefix: 'WEBCAM',
     productName: null,
     requireProductId: false,
@@ -103,6 +105,19 @@ await fetch('https://botbridge.dev/api/pro/deactivate', {
   headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ code: CODE, machineId: stableMachineId() }),
 });
+
+// 4) 远程批准（可选，Pro）：把一步高风险操作交给手机确认
+const started = await (await fetch('https://botbridge.dev/api/pro/approval', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({
+    code: CODE, machineId: stableMachineId(),
+    taskId: 'task-123', title: 'Run the export and email it to finance',
+    screenshotUrl: 'https://…/preview.png',   // 或很小的 screenshotBase64
+  }),
+})).json();
+// started.approveUrl → 生成二维码给手机扫；started.pollUrl → 轮询（见 HELPER-EXPIRES-PATCH.md §4）
+// 轮询返回 { status: 'pending' | 'approved' | 'cancelled' | 'expired' }
 ```
 
 `license.json` 的完整契约、`stableMachineId` 的算法、到期与离线宽限的实现，
@@ -118,7 +133,15 @@ await fetch('https://botbridge.dev/api/pro/deactivate', {
 - **商品隔离**：非本商品的 `productId` 直接忽略（同类事件不串码）。
 - **领码限流**：按 IP + 按订单号双桶，防订单号暴力枚举。
 - **机器上限**：KV 上的读-改-写带并发校验，两台机器同时激活也不会超限或丢绑定。
-- **结构化日志**：`waffo.webhook` / `license.claim` / `license.activate` 等，只记激活码后 4 位。
+- **远程批准（Pro）**：Helper 用「有效 + 未过期 + 已绑本机」的激活码调
+  `POST /api/pro/approval`（`{code, machineId, taskId, title, screenshotUrl?|screenshotBase64?}`，
+  base64 截图 >200KB 拒绝、优先用 URL），拿到一个 **24 小时、一次性** 的不透明 token；
+  手机打开 `approveUrl`（即 `<approvalPath>?t=…`）点 **Continue / Cancel**，
+  Helper 轮询 `GET /api/pro/approval?t=…&code=…&machineId=…` 得到
+  `pending|approved|cancelled|expired`。**所有商品自动具备**，无需在 webhook/激活逻辑里改一行；
+  `approvalPath` 只决定买家在哪一页作答——新商品可复制 `/cc-helper/approve` 那页的文案，
+  页面由 Worker 渲染（`lib/approval-logic.js`），会校验状态并转义标题。
+- **结构化日志**：`waffo.webhook` / `license.claim` / `license.activate` / `license.approval` 等，只记激活码后 4 位。
 
 ## 5. 现有商品
 
