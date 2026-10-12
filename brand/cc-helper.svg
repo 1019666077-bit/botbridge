@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img">
+  <title>CC Helper</title>
+  <desc>Product mark for CC Helper. A white terminal and cyan prompt, for dispatching Claude Code.</desc>
+  <defs>
+    <linearGradient id="bg" x1="16%" y1="0%" x2="84%" y2="100%">
+      <stop offset="0%" stop-color="#1B265C"/>
+      <stop offset="40%" stop-color="#101533"/>
+      <stop offset="100%" stop-color="#060814"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx="50%" cy="36%" r="58%">
+      <stop offset="0%" stop-color="#7488EE" stop-opacity="0.40"/>
+      <stop offset="50%" stop-color="#2C3B86" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#2C3B86" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="paper" gradientUnits="userSpaceOnUse" x1="256" y1="136" x2="256" y2="376">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E6EEF7"/>
+    </linearGradient>
+    <linearGradient id="cyan" gradientUnits="userSpaceOnUse" x1="180" y1="220" x2="220" y2="360">
+      <stop offset="0%" stop-color="#9AF7FF"/>
+      <stop offset="42%" stop-color="#2AD4FF"/>
+      <stop offset="100%" stop-color="#00A4E4"/>
+    </linearGradient>
+    <clipPath id="card">
+      <rect x="88" y="136" width="336" height="240" rx="48"/>
+    </clipPath>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="118" fill="url(#sheen)"/>
+  <g clip-path="url(#card)">
+    <rect x="88" y="136" width="336" height="240" fill="url(#paper)"/>
+    <circle cx="132" cy="180" r="12" fill="#C5D3E3"/>
+    <circle cx="168" cy="180" r="12" fill="#C5D3E3"/>
+    <circle cx="204" cy="180" r="12" fill="url(#cyan)"/>
+    <path d="M154 238L220 294L154 350" fill="none" stroke="url(#cyan)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="252" y="278" width="108" height="32" rx="16" fill="#B7C6D8"/>
+    <rect x="372" y="268" width="20" height="52" rx="6" fill="url(#cyan)"/>
+  </g>
+</svg>
