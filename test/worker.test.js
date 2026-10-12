@@ -191,3 +191,38 @@ test('router: an internal failure returns 500 rather than crashing', async () =>
   const res = await worker.fetch(claimUrl(), env);
   assert.equal(res.status, 500);
 });
+
+test('accepts a signature from the test public key when live key fails', async () => {
+  const live = generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+    publicKeyEncoding: { type: 'spki', format: 'pem' },
+    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+  });
+  const testPair = generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+    publicKeyEncoding: { type: 'spki', format: 'pem' },
+    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+  });
+  const env = makeEnv({
+    WAFFO_WEBHOOK_PUBLIC_KEY: live.publicKey,
+    WAFFO_WEBHOOK_TEST_PUBLIC_KEY: testPair.publicKey,
+  });
+  const ev = event('subscription.activated', {
+    orderId: 'ord_dual_1',
+    buyerEmail: 'dual@example.com',
+    currentPeriodEnd: '2027-10-12',
+  }, { id: 'evt_test_dual_1' });
+  // event() hardcodes orderId in data then spreads data — ensure orderId wins
+  ev.data.orderId = 'ord_dual_1';
+  ev.data.buyerEmail = 'dual@example.com';
+  const res = await handleWebhook(signedRequest(ev, { key: testPair.privateKey, id: 'evt_test_dual_1' }), env);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.ok, true);
+  assert.equal(body.orderId, 'ord_dual_1');
+
+  const claim = await handleClaim(claimUrl('dual@example.com', 'ord_dual_1'), env);
+  assert.equal(claim.status, 200);
+  const claimed = await claim.json();
+  assert.match(claimed.code, /^CCH-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/);
+});

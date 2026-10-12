@@ -18,6 +18,7 @@ id = "21f2ded01837433a9f6a621016d24939"
 
 # Secrets are set out-of-band, never committed (see docs/WAFFO-LICENSE-FULFILLMENT.md):
 #   npx wrangler secret put WAFFO_WEBHOOK_PUBLIC_KEY
+#   npx wrangler secret put WAFFO_WEBHOOK_TEST_PUBLIC_KEY
 #
 # Optional plain vars (uncomment to override the defaults in worker.js):
 # [vars]

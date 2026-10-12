@@ -8,7 +8,8 @@
 //   GET  /api/license/lookup     code -> {valid, status, expiresAt} (Helper)
 //
 // Secrets / vars (see docs/WAFFO-LICENSE-FULFILLMENT.md):
-//   WAFFO_WEBHOOK_PUBLIC_KEY   PEM RSA public key from the Waffo dashboard
+//   WAFFO_WEBHOOK_PUBLIC_KEY        PEM RSA public key (Live / Production)
+//   WAFFO_WEBHOOK_TEST_PUBLIC_KEY   optional PEM for Waffo Test Mode (tried after Live)
 //   CC_HELPER_PRODUCT_ID       defaults to PROD_4rpv1XspFZwARrTFDfvlmY
 //   CC_HELPER_PRODUCT_NAME     optional extra filter
 //   CC_HELPER_REQUIRE_PRODUCT_MATCH  "1" to reject events without a productId
@@ -41,7 +42,17 @@ function config(env) {
     productName: env.CC_HELPER_PRODUCT_NAME || null,
     requireProductId: /^(1|true|yes)$/i.test(env.CC_HELPER_REQUIRE_PRODUCT_MATCH || ''),
     publicKey: env.WAFFO_WEBHOOK_PUBLIC_KEY || '',
+    testPublicKey: env.WAFFO_WEBHOOK_TEST_PUBLIC_KEY || '',
   };
+}
+
+/** Accept Live or Test Mode signatures; Live key is tried first. */
+async function signatureAccepted(cfg, header, rawBody) {
+  const keys = [cfg.publicKey, cfg.testPublicKey].filter((k) => typeof k === 'string' && k.trim());
+  for (const publicKeyPem of keys) {
+    if (await verifyWebhookSignature({ publicKeyPem, header, rawBody })) return true;
+  }
+  return false;
 }
 
 // Light per-IP throttle. KV is eventually consistent, so this is a speed bump,
@@ -98,11 +109,11 @@ export async function handleWebhook(request, env) {
   const cfg = config(env);
   const rawBody = await request.text();
 
-  const signatureOk = await verifyWebhookSignature({
-    publicKeyPem: cfg.publicKey,
-    header: request.headers.get('x-waffo-signature'),
+  const signatureOk = await signatureAccepted(
+    cfg,
+    request.headers.get('x-waffo-signature'),
     rawBody,
-  });
+  );
   if (!signatureOk) return json({ error: 'invalid_signature' }, 401);
 
   let event;
