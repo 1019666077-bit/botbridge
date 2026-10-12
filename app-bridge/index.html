@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>App Bridge · Local Windows UI for Cursor | Moying</title>
+  <meta name="description" content="Free Cursor thin plugin: list Windows windows, read on-screen UI text, screenshot via local Windows-MCP. Click/type are Pro placeholders. MIT. Not listed yet. Does not promise WeChat control." />
+  <link rel="canonical" href="https://botbridge.dev/app-bridge" />
+  <link rel="icon" href="/favicon.svg" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+  <meta name="theme-color" content="#efe4cc" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Bot Bridge" />
+  <meta property="og:url" content="https://botbridge.dev/app-bridge" />
+  <meta property="og:title" content="App Bridge · List, read UI text, screenshot" />
+  <meta property="og:description" content="Free MIT Cursor plugin + local Windows-MCP. List windows, read UI text, screenshot. Click/type Coming soon. No WeChat automation promise." />
+  <meta property="og:image" content="https://botbridge.dev/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="App Bridge" />
+  <meta name="twitter:description" content="Free Cursor plugin for local Windows UI: list windows, read text, screenshot. Pro click/type later. MIT." />
+  <meta name="twitter:image" content="https://botbridge.dev/og.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <a class="brand" href="/" style="text-decoration:none;color:inherit">
+        <span class="seal-mini" aria-hidden="true">墨</span>
+        <div>
+          <span class="brand-name">Bot Bridge</span>
+          <p>Tools · Studio</p>
+        </div>
+      </a>
+      <a class="ghost" href="https://github.com/1019666077-bit/app-bridge-plugin">GitHub →</a>
+    </header>
+
+    <main class="article">
+      <p class="zh-gloss">产品名：App Bridge · 应用桥</p>
+      <h1>App Bridge</h1>
+      <p class="lead">Let Cursor see what’s on your Windows desktop — list open windows, read on-screen UI text, and take a screenshot — through a free thin plugin and a local MCP server. No always-on tray exe in the free layer.</p>
+      <p class="zh-gloss">免费薄插件 + 本机 MCP：列出窗口、读界面文字、截图。点击/输入等留给 Pro 占位。</p>
+
+            <p class="audience"><strong>For Cursor and Grok Bot</strong> (Agent / Bot plugins). · <strong>面向 Cursor 与 Grok Bot</strong>（Agent / Bot 插件）。</p>
+<div class="note">
+        <strong>Status.</strong> Product page staking — <em>not listed</em> on Cursor Marketplace yet · <strong>尚未上架</strong>. Free layer is <strong>MIT</strong>.
+      </div>
+
+      <div class="cta-row">
+        <a class="cta" href="https://github.com/1019666077-bit/app-bridge-plugin">Plugin on GitHub (MIT)</a>
+        <a class="cta cta-ghost-link" href="https://github.com/1019666077-bit/Windows-MCP">Local MCP · Windows-MCP fork</a>
+        <span class="cta cta-disabled" aria-disabled="true">Pro click / type · Coming soon</span>
+      </div>
+      <p class="caption">Free tools only list windows, read UI text / tree, and screenshot. Click, type, scroll, shortcuts, and app launch are Pro placeholders — not implemented in Free.</p>
+
+      <div class="note">
+        <strong>WeChat / 微信.</strong> It may show up in the window list like any other app. That is an optional example only — <strong>we do not promise reliable WeChat control or automation</strong> · 不承诺能控微信。
+      </div>
+
+      <h2>Free vs Pro</h2>
+      <p class="zh-gloss">Free：列表窗口 / 读界面文字 / 截图 · Pro：点击输入等 Coming soon</p>
+      <div class="plan-table-wrap">
+        <table class="plan-table">
+          <thead>
+            <tr><th></th><th>Free</th><th>Pro</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">List windows</th>
+              <td>Yes</td>
+              <td>Same core</td>
+            </tr>
+            <tr>
+              <th scope="row">Read UI text / tree</th>
+              <td>Yes (Snapshot)</td>
+              <td>Same core</td>
+            </tr>
+            <tr>
+              <th scope="row">Screenshot</th>
+              <td>Yes</td>
+              <td>Same core</td>
+            </tr>
+            <tr>
+              <th scope="row">Click / type / scroll</th>
+              <td>—</td>
+              <td>Coming soon (placeholder)</td>
+            </tr>
+            <tr>
+              <th scope="row">License</th>
+              <td>MIT · $0</td>
+              <td>TBD</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>How it fits</h2>
+      <ol class="steps">
+        <li>Clone <a href="https://github.com/1019666077-bit/app-bridge-plugin">app-bridge-plugin</a> (with submodules) into <code>~/.cursor/plugins/local/app-bridge</code>, or install from Marketplace when listed.</li>
+        <li>Install <a href="https://docs.astral.sh/uv/">uv</a> so Cursor can run the forked <a href="https://github.com/1019666077-bit/Windows-MCP">Windows-MCP</a> server locally.</li>
+        <li>Ask to list windows, read UI text, or screenshot — or run <code>/list-windows</code>.</li>
+      </ol>
+
+      <h2>Who we are</h2>
+      <p class="zh-gloss">运营主体</p>
+      <p><strong>Moying Studio</strong> — 东莞市常平创客汇网络技术工作室（个体工商户）, Dongguan, Guangdong, China. Contact: <a href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a>.</p>
+
+      <h2 id="terms">Terms (App Bridge)</h2>
+      <p class="zh-gloss">条款（仅本产品）</p>
+      <p>App Bridge is a product of Moying Studio (东莞市常平创客汇网络技术工作室，个体工商户). The free plugin is MIT-licensed software provided as-is. Desktop access runs on your Windows PC via an MIT fork of Windows-MCP; you are responsible for permissions and what you automate. We do not promise control of WeChat or any specific third-party app. Pro click/type buttons marked Coming soon are not offers. We may update these terms on this page.</p>
+
+      <h2 id="privacy">Privacy (App Bridge)</h2>
+      <p class="zh-gloss">隐私（仅本产品）</p>
+      <p>This page is separate from the calligraphy generator’s privacy policy. Screenshots and UI text are captured locally for your Cursor conversation; we do not run a cloud that stores your desktop captures for this product. The free plugin does not sell Marketplace usage data through us. Support email is kept only to help you.</p>
+
+      <h2>Links</h2>
+      <div class="pill-row">
+        <a class="pill" href="https://github.com/1019666077-bit/app-bridge-plugin">GitHub</a>
+        <a class="pill" href="https://github.com/1019666077-bit/Windows-MCP">Windows-MCP fork</a>
+        <a class="pill" href="/webcam">Webcam</a>
+        <a class="pill" href="/obsidian">Obsidian</a>
+        <a class="pill" href="/cc-helper">CC Helper</a>
+      </div>
+    </main>
+
+    <footer class="legal">
+      <a href="/">Bot Bridge</a>
+      <a href="#terms">Terms</a>
+      <a href="#privacy">Privacy</a>
+    </footer>
+  </div>
+  <script data-goatcounter="https://mymoying.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

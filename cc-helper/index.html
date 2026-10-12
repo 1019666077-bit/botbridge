@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Bot Bridge / CC Helper · Local Claude Code for Cursor &amp; Grok Bot | Moying</title>
+  <meta name="description" content="Free thin Cursor/Grok Bot plugin (skills + soft hooks) plus a Windows desktop Helper for realtime Claude Code dispatch. Free loop vs Pro budget caps, stall timeout, Bark/webhook." />
+  <link rel="canonical" href="https://botbridge.dev/cc-helper" />
+  <link rel="icon" href="/favicon.svg" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+  <meta name="theme-color" content="#efe4cc" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Bot Bridge" />
+  <meta property="og:url" content="https://botbridge.dev/cc-helper" />
+  <meta property="og:title" content="Bot Bridge / CC Helper · Local Claude Code control" />
+  <meta property="og:description" content="Free plugin for Cursor and Grok Bot. Desktop Helper for realtime progress. Pro adds hard budget caps, stall timeout, and Bark/webhook alerts." />
+  <meta property="og:image" content="https://botbridge.dev/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bot Bridge / CC Helper" />
+  <meta name="twitter:description" content="Free Cursor/Grok Bot plugin + Windows Helper for realtime Claude Code. Pro: budget cap, stall kill, Bark/webhook." />
+  <meta name="twitter:image" content="https://botbridge.dev/og.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <a class="brand" href="/" style="text-decoration:none;color:inherit">
+        <span class="seal-mini" aria-hidden="true">墨</span>
+        <div>
+          <span class="brand-name">Bot Bridge</span>
+          <p>Tools · Studio</p>
+        </div>
+      </a>
+      <a class="ghost" href="https://github.com/1019666077-bit/cc-helper-plugin">Free plugin →</a>
+    </header>
+
+    <main class="article">
+      <p class="zh-gloss">中文名：CC Helper · 产品名 Bot Bridge</p>
+      <h1>Bot Bridge / CC Helper</h1>
+      <p class="lead">Let Cursor or Grok Bot hand real work to Claude Code on your Windows PC — with a free thin plugin for discovery, and a local desktop Helper for realtime control.</p>
+      <p class="zh-gloss">用免费薄插件让机器人会派活；真正的实时进度、监督和 Pro 硬限制，在本机桌面 Helper 里。</p>
+
+            <p class="audience"><strong>For Cursor and Grok Bot</strong> (Agent / Bot plugins). · <strong>面向 Cursor 与 Grok Bot</strong>（Agent / Bot 插件）。</p>
+<div class="cta-row">
+        <a class="cta" href="https://github.com/1019666077-bit/cc-helper-plugin">Get the free plugin</a>
+        <span class="cta cta-disabled" aria-disabled="true">Download Helper · Coming soon</span>
+        <span class="cta cta-ghost" aria-disabled="true">Buy Pro · Coming soon</span>
+      </div>
+      <p class="caption">Plugin is MIT and free. Desktop installer and license checkout are not live yet — placeholders only.</p>
+
+      <h2>Two layers</h2>
+      <p class="zh-gloss">两层：市场薄插件 + 本机 Helper</p>
+      <p><strong>Free marketplace plugin</strong> — skills, rules, and soft hooks. It teaches the bot how to write inbox JSON, poll status, and stop a job. Soft tips only: it does <em>not</em> hard-block risky shells. Submitted for review on Cursor Marketplace (not listed yet) · 已提交审核，尚未上架. Install from Marketplace / Connect Apps when it goes live, or clone into <code>~/.cursor/plugins/local/cc-helper</code>.</p>
+      <p><strong>Desktop Helper (Windows)</strong> — tray / daemon with a progress panel. This is what actually runs and watches Claude Code in realtime. Without it, the plugin is only the playbook layer.</p>
+
+      <h2>Free vs Pro</h2>
+      <p class="zh-gloss">Free 派活闭环 · Pro 预算硬顶、超时判死、手机通知</p>
+      <div class="plan-table-wrap">
+        <table class="plan-table">
+          <thead>
+            <tr><th></th><th>Free</th><th>Pro</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Dispatch loop</th>
+              <td>Send task → poll status → stop</td>
+              <td>Same</td>
+            </tr>
+            <tr>
+              <th scope="row">Realtime panel</th>
+              <td>With desktop Helper</td>
+              <td>With desktop Helper</td>
+            </tr>
+            <tr>
+              <th scope="row">Token / budget cap</th>
+              <td>Soft guidance only</td>
+              <td>Hard stop when the cap hits</td>
+            </tr>
+            <tr>
+              <th scope="row">Stall timeout</th>
+              <td>—</td>
+              <td>Kill a hung job after N minutes</td>
+            </tr>
+            <tr>
+              <th scope="row">Phone alerts</th>
+              <td>—</td>
+              <td>Bark and/or webhook on blockers</td>
+            </tr>
+            <tr>
+              <th scope="row">Price (planned)</th>
+              <td>$0</td>
+              <td>~$49 / year or $79 lifetime</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>How it fits together</h2>
+      <ol class="steps">
+        <li>Install the free plugin in Cursor or Grok Bot.</li>
+        <li>Install the Windows Helper and keep the tray running (when the download is available).</li>
+        <li>Ask the bot to dispatch with the <code>cc-helper-dispatch</code> skill.</li>
+        <li>Watch progress locally; Pro users get hard caps and Bark/webhook when something blocks.</li>
+      </ol>
+
+      <div class="note">
+        <strong>Marketplace note.</strong> Cursor publisher terms require marketplace plugins to be free. We don’t sell the plugin. Paid Pro is only the local Helper license, sold on this site (coming soon via Waffo).
+      </div>
+
+      <h2>Who we are</h2>
+      <p class="zh-gloss">运营主体</p>
+      <p><strong>Moying Studio</strong> — 东莞市常平创客汇网络技术工作室（个体工商户）, Dongguan, Guangdong, China. Contact: <a href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a>.</p>
+
+      <h2 id="terms">Terms (CC Helper)</h2>
+      <p class="zh-gloss">条款（仅本产品）</p>
+      <p>Bot Bridge / CC Helper is a product of Moying Studio (东莞市常平创客汇网络技术工作室，个体工商户). The free marketplace plugin is MIT-licensed software provided as-is. The Windows desktop Helper and any Pro license are sold separately on this site when available. Coming-soon download and purchase buttons are placeholders, not offers. You are responsible for how you use Claude Code and any API spend on your own machine. We may update these terms on this page.</p>
+
+      <h2 id="privacy">Privacy (CC Helper)</h2>
+      <p class="zh-gloss">隐私（仅本产品）</p>
+      <p>This page is separate from the calligraphy generator’s privacy policy. The free Cursor/Grok Bot plugin does not collect or sell your Marketplace usage data through us. The desktop Helper runs on your Windows PC: task inbox, progress, and license checks stay on your machine unless you turn on optional notify channels (Bark / webhook) that you configure yourself. We do not operate a cloud that stores your Claude Code transcripts for this product. If you email us for support, we keep that correspondence only to help you. Payments (when live) are processed by Waffo; we receive order email and license fulfillment details needed to issue a key.</p>
+
+      <h2>Links</h2>
+      <div class="pill-row">
+        <a class="pill" href="https://github.com/1019666077-bit/cc-helper-plugin">Plugin on GitHub</a>
+        <a class="pill" href="/">All Bot Bridge products</a>
+        <a class="pill" href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a>
+      </div>
+    </main>
+
+    <footer class="legal">
+      <a href="/">Bot Bridge</a>
+      <a href="#terms">Terms</a>
+      <a href="#privacy">Privacy</a>
+    </footer>
+  </div>
+  <script data-goatcounter="https://mymoying.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

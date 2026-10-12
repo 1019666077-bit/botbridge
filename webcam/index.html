@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Webcam Bridge · On-demand webcam for Cursor | Moying</title>
+  <meta name="description" content="Free Cursor thin plugin that snaps one webcam frame into your chat. Real capture is local MCP (webcam_mcp): open, one JPEG, release. No always-on tray in the free layer." />
+  <link rel="canonical" href="https://botbridge.dev/webcam" />
+  <link rel="icon" href="/favicon.svg" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+  <meta name="theme-color" content="#efe4cc" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Bot Bridge" />
+  <meta property="og:url" content="https://botbridge.dev/webcam" />
+  <meta property="og:title" content="Webcam Bridge · One frame into Cursor" />
+  <meta property="og:description" content="Free marketplace plugin + local webcam_mcp. On-demand one JPEG, camera released after the shot. Pro tray later." />
+  <meta property="og:image" content="https://botbridge.dev/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Webcam Bridge" />
+  <meta name="twitter:description" content="Free Cursor plugin for on-demand webcam snaps via local MCP. Camera opens, one frame, then release." />
+  <meta name="twitter:image" content="https://botbridge.dev/og.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <a class="brand" href="/" style="text-decoration:none;color:inherit">
+        <span class="seal-mini" aria-hidden="true">墨</span>
+        <div>
+          <span class="brand-name">Bot Bridge</span>
+          <p>Tools · Studio</p>
+        </div>
+      </a>
+      <a class="ghost" href="https://github.com/1019666077-bit/webcam-bridge-plugin">Free plugin →</a>
+    </header>
+
+    <main class="article">
+      <p class="zh-gloss">产品名：Webcam Bridge · 摄像头桥</p>
+      <h1>Webcam Bridge</h1>
+      <p class="lead">Give Cursor one on-demand webcam frame in the current chat. The free thin plugin is the Marketplace front door; real capture is a local MCP server that opens the camera, returns one JPEG, and releases the device.</p>
+      <p class="zh-gloss">免费薄插件做引流；真正抓拍是本机 MCP（webcam_mcp）：按需开摄像头，拍一帧 JPEG，拍完立刻释放。</p>
+
+            <p class="audience"><strong>For Cursor and Grok Bot</strong> (Agent / Bot plugins). · <strong>面向 Cursor 与 Grok Bot</strong>（Agent / Bot 插件）。</p>
+<div class="cta-row">
+        <a class="cta" href="https://github.com/1019666077-bit/webcam-bridge-plugin">Get the free plugin</a>
+        <a class="cta cta-ghost-link" href="https://github.com/1019666077-bit/webcam_mcp">Local MCP · webcam_mcp</a>
+        <span class="cta cta-disabled" aria-disabled="true">Pro installer / tray · Coming soon</span>
+      </div>
+      <p class="caption">Marketplace plugin is MIT and free. On-demand snap (command or in-chat MCP Apps button) is the free path. Pro installer / system tray are planned later — placeholder only.</p>
+
+      <h2>What you get</h2>
+      <p class="zh-gloss">你得到什么</p>
+      <p><strong>Free Cursor plugin</strong> — skills, rules, and a <code>snap</code> command so the agent knows when to take one frame and how the image returns to the conversation. No <code>.exe</code>, no tray, no always-on camera process in this layer.</p>
+      <p><strong>In-chat photo button (MCP Apps).</strong> When the MCP App UI is available in the conversation, you can tap a <em>take one photo</em> control in chat — same on-demand one JPEG, then the camera is released. · 对话内可点「拍一张」按钮（MCP Apps）。</p>
+      <p><strong>Local MCP (<a href="https://github.com/1019666077-bit/webcam_mcp">webcam_mcp</a>)</strong> — Cursor starts it over stdio via <a href="https://docs.astral.sh/uv/">uv</a>. <code>take_photo</code> opens camera index <code>0</code>, returns one JPEG into the chat, and releases the device before the tool returns.</p>
+      <p><strong>Pro (later)</strong> — packaged installer / system tray. Not for sale on this page yet.</p>
+
+      <h2>How a shot works</h2>
+      <p class="zh-gloss">一次抓拍怎么走</p>
+      <ol class="steps">
+        <li>Install the free plugin from Cursor Marketplace (after listing) or clone into <code>~/.cursor/plugins/local/webcam-bridge</code>.</li>
+        <li>Install <code>uv</code> so Cursor can fetch and run <code>webcam_mcp</code> from Git.</li>
+        <li>Allow camera access if the OS asks.</li>
+        <li>Ask for one photo, or run the <code>snap</code> command. First start may need network for <code>uv</code> to pull the server.</li>
+      </ol>
+      <div class="note">
+        The camera stays closed until <code>take_photo</code> runs. This bridge’s playbook uses still frames only — not continuous video. (<code>webcam_mcp</code> also has <code>record_video</code>; the free plugin does not use it.)
+      </div>
+
+      <h2>Free vs Pro</h2>
+      <div class="plan-table-wrap">
+        <table class="plan-table">
+          <thead>
+            <tr><th></th><th>Free</th><th>Pro (planned)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Marketplace plugin</th>
+              <td>Skills + install guide</td>
+              <td>Same discovery layer</td>
+            </tr>
+            <tr>
+              <th scope="row">Capture</th>
+              <td>Local <code>webcam_mcp</code> via uv</td>
+              <td>Same MCP core</td>
+            </tr>
+            <tr>
+              <th scope="row">Mode</th>
+              <td>One frame, then release</td>
+              <td>One frame, then release</td>
+            </tr>
+            <tr>
+              <th scope="row">Installer / tray</th>
+              <td>—</td>
+              <td>Coming soon</td>
+            </tr>
+            <tr>
+              <th scope="row">Price</th>
+              <td>$0</td>
+              <td>TBD</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Who we are</h2>
+      <p class="zh-gloss">运营主体</p>
+      <p><strong>Moying Studio</strong> — 东莞市常平创客汇网络技术工作室（个体工商户）, Dongguan, Guangdong, China. Contact: <a href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a>.</p>
+
+      <h2 id="terms">Terms (Webcam Bridge)</h2>
+      <p class="zh-gloss">条款（仅本产品）</p>
+      <p>Webcam Bridge is a product of Moying Studio (东莞市常平创客汇网络技术工作室，个体工商户). The free marketplace plugin is MIT-licensed software provided as-is. Capture runs on your machine through open-source <code>webcam_mcp</code>; you are responsible for camera permissions and local use. Pro installer / tray buttons marked Coming soon are not offers. We may update these terms on this page.</p>
+
+      <h2 id="privacy">Privacy (Webcam Bridge)</h2>
+      <p class="zh-gloss">隐私（仅本产品）</p>
+      <p>This page is separate from the calligraphy generator’s privacy policy. Frames are captured locally and returned into your Cursor conversation; we do not run a cloud that stores your webcam images for this product. The free plugin does not sell Marketplace usage data through us. If you email support, we keep that correspondence only to help you.</p>
+
+      <h2>Links</h2>
+      <div class="pill-row">
+        <a class="pill" href="https://github.com/1019666077-bit/webcam-bridge-plugin">Plugin on GitHub</a>
+        <a class="pill" href="https://github.com/1019666077-bit/webcam_mcp">webcam_mcp</a>
+        <a class="pill" href="/cc-helper">CC Helper</a>
+        <a class="pill" href="/">All Bot Bridge products</a>
+      </div>
+    </main>
+
+    <footer class="legal">
+      <a href="/">Bot Bridge</a>
+      <a href="#terms">Terms</a>
+      <a href="#privacy">Privacy</a>
+    </footer>
+  </div>
+  <script data-goatcounter="https://mymoying.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
