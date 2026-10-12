@@ -33,7 +33,8 @@ npx wrangler secret put WAFFO_WEBHOOK_PUBLIC_KEY
 
 | 变量 | 默认 | 作用 |
 | --- | --- | --- |
-| `CC_HELPER_PRODUCT_ID` | `PROD_4rpv1XspFZwARrTFDfvlmY` | 只处理该商品的订阅事件 |
+| `CC_HELPER_PRODUCT_ID` | `PROD_4rpv1XspFZwARrTFDfvlmY` | 正式商品；发码按 `currentPeriodEnd` 到期 |
+| `CC_HELPER_TEST_PRODUCT_ID` | `PROD_4H2br9vXCUBpKU7kKBFtBF` | Waffo Test Mode 测试商品（逗号分隔可多个）；命中即标 `isTest`，到期被压到 7 天内，**绝不永久 Pro** |
 | `CC_HELPER_PRODUCT_NAME` | 空 | 可选的商品名兜底过滤 |
 | `CC_HELPER_REQUIRE_PRODUCT_MATCH` | `0` | `1` = 事件里没有 productId 时也拒绝 |
 
@@ -76,8 +77,13 @@ Worker（`worker.js` → `lib/license-logic.js`）按下表处理；无关 `even
 | eventType | 动作 | KV 记录变化 |
 | --- | --- | --- |
 | `subscription.activated` | 首次发码 | 新建 `order:<orderId>`，`status=active`，`expiresAt=currentPeriodEnd`，生成 `code` |
+| `order.completed` | 一次性购买发码 | 同 activate（CC Helper Pro 测试结账走的是这条） |
 | `subscription.renewed` / `subscription.recovered` | 续期 | 同 `orderId` 记录 `expiresAt` 推进到新的 `currentPeriodEnd`，`status=active`（无记录则补发） |
 | `subscription.canceled` / `refund.succeeded` | 吊销 | `status=revoked`（保留 `expiresAt` 以便对账） |
+
+**测试订单**：商品命中 `CC_HELPER_TEST_PRODUCT_ID`（或事件带 `mode/test/livemode:false`
+测试标记）时，记录标 `isTest=true`，且 `expiresAt` 被压到 **最多 7 天**（事件没有周期就正好给 7 天）。
+测试授权因此不会变成永久 Pro。`isTest` 一旦写入即“粘住”，后续续期事件也不会把它变成正式授权。
 
 幂等：按 Waffo 投递 id（`event.id`）去重，重复投递直接返回 `{ok:true,duplicate:true}`，
 不会重复发码或覆盖已发码。
@@ -96,9 +102,16 @@ Worker（`worker.js` → `lib/license-logic.js`）按下表处理；无关 `even
 | 方法 路径 | 说明 |
 | --- | --- |
 | `POST /api/waffo/webhook` | Waffo 专用。签名不通过 401；其余见上表 |
-| `GET /api/license/claim?email=&orderId=` | 买家自助领码，返回 `{code,status,expiresAt,licenseJson}`；邮箱+订单号不匹配统一 404；已吊销 403；限流 429 |
-| `GET /api/license/lookup?code=` | 给桌面 Helper 后续校验用，返回 `{valid,status,expiresAt}` |
+| `GET /api/license/claim?email=&orderId=` | 买家自助领码，返回 `{code,status,expiresAt,isTest,machines,licenseJson}`；邮箱+订单号不匹配统一 404；已吊销 403；限流 429 |
+| `GET /api/license/lookup?code=` | 只读内容校验，返回 `{valid,status,expiresAt}`（无机器绑定判断） |
+| `POST /api/pro/activate` | `{code,machineId,machineName?}` 绑定本机；首绑即绑定，第 3 台机器 409 `machine_limit`；已吊销/过期 403；码不存在 404；成功返回 `{ok,code,status,expiresAt,isTest,machines,licenseJson}` |
+| `POST /api/pro/validate` | `{code,machineId}` 在线复验（`machineId` **必填**，漏传 400，避免绕过机器绑定）；返回 `{valid,status,reason?,expiresAt,isTest,machines?}`；未绑本机 `reason:"machine_not_bound"`，过期 `reason:"expired"`，吊销 `revoked` |
+| `POST /api/pro/deactivate` | `{code,machineId}` 解绑一台机器，返回 `{ok,removed,machines}`；幂等 |
 | 其余路径 | `env.ASSETS.fetch()` 走静态站点 |
+
+**机器绑定**：一台机器一个码最多绑 **2** 台（`MAX_MACHINES`）。`machineId` 由 Helper 用
+本机可复现信息哈希得到（匿名、稳定），只存于 `order:<orderId>` 的 `machines[]` 里。
+限流：`claim`/`lookup` 20 次/分，`activate`/`validate`/`deactivate` 30 次/分（同 `cf-connecting-ip`）。
 
 轻量限流：按 `cf-connecting-ip` 对 `claim` / `lookup` 各 20 次/分钟（KV 计数，最终一致，
 是减速带不是硬闸门）。
@@ -106,7 +119,7 @@ Worker（`worker.js` → `lib/license-logic.js`）按下表处理；无关 `even
 ## 4. 上线前自检
 
 ```bash
-npm test        # 48 个用例：发码/校验和、事件分类、过期归一、RSA 验签、worker 全链路
+npm test        # 68 个用例：发码/校验和、事件分类、过期归一、测试授权、机器绑定、RSA 验签、worker 全链路
 ```
 
 - **伪造签名应被拒**：对线上地址 POST 一个 body 不带/乱写 `X-Waffo-Signature`，应返回

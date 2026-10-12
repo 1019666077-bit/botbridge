@@ -20,8 +20,13 @@ id = "21f2ded01837433a9f6a621016d24939"
 #   npx wrangler secret put WAFFO_WEBHOOK_PUBLIC_KEY
 #   npx wrangler secret put WAFFO_WEBHOOK_TEST_PUBLIC_KEY
 #
-# Optional plain vars (uncomment to override the defaults in worker.js):
-# [vars]
+# Plain vars. CC_HELPER_TEST_PRODUCT_ID is the Waffo Test Mode product for
+# CC Helper Pro: orders for it are fulfilled but marked `isTest` and capped to
+# a short (7 day) expiry so a test checkout can never grant perpetual Pro.
+[vars]
+CC_HELPER_TEST_PRODUCT_ID = "PROD_4H2br9vXCUBpKU7kKBFtBF"
+
+# Other optional overrides (defaults live in worker.js):
 # CC_HELPER_PRODUCT_ID = "PROD_4rpv1XspFZwARrTFDfvlmY"
 # CC_HELPER_PRODUCT_NAME = "CC Helper Pro"
 # CC_HELPER_REQUIRE_PRODUCT_MATCH = "0"
