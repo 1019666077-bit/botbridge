@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img">
+  <title>App Bridge</title>
+  <desc>Product mark for App Bridge. Overlapping windows for listing desktop UI, reading on-screen text, and screenshots.</desc>
+  <defs>
+    <linearGradient id="bg" x1="16%" y1="0%" x2="84%" y2="100%">
+      <stop offset="0%" stop-color="#1B265C"/>
+      <stop offset="40%" stop-color="#101533"/>
+      <stop offset="100%" stop-color="#060814"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx="50%" cy="36%" r="58%">
+      <stop offset="0%" stop-color="#7488EE" stop-opacity="0.40"/>
+      <stop offset="50%" stop-color="#2C3B86" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#2C3B86" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="paper" gradientUnits="userSpaceOnUse" x1="256" y1="100" x2="256" y2="412">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E6EEF7"/>
+    </linearGradient>
+    <linearGradient id="cyan" gradientUnits="userSpaceOnUse" x1="256" y1="100" x2="256" y2="270">
+      <stop offset="0%" stop-color="#9AF7FF"/>
+      <stop offset="46%" stop-color="#24D2FF"/>
+      <stop offset="100%" stop-color="#00A2E2"/>
+    </linearGradient>
+    <clipPath id="back">
+      <rect x="208" y="104" width="204" height="160" rx="34"/>
+    </clipPath>
+    <clipPath id="front">
+      <rect x="100" y="196" width="276" height="212" rx="40"/>
+    </clipPath>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="118" fill="url(#sheen)"/>
+  <g clip-path="url(#back)">
+    <rect x="208" y="104" width="204" height="160" fill="url(#cyan)"/>
+    <rect x="208" y="152" width="204" height="112" fill="#F7FAFD"/>
+  </g>
+  <g clip-path="url(#front)">
+    <rect x="100" y="196" width="276" height="212" fill="url(#paper)"/>
+    <rect x="100" y="196" width="276" height="54" fill="url(#cyan)"/>
+    <circle cx="136" cy="223" r="8" fill="#FFFFFF"/>
+    <circle cx="162" cy="223" r="8" fill="#FFFFFF" fill-opacity="0.8"/>
+    <circle cx="188" cy="223" r="8" fill="#FFFFFF" fill-opacity="0.8"/>
+    <rect x="132" y="278" width="172" height="16" rx="8" fill="#C5D3E3"/>
+    <rect x="132" y="310" width="124" height="16" rx="8" fill="#C5D3E3"/>
+    <rect x="132" y="342" width="148" height="16" rx="8" fill="#8FDFFF"/>
+  </g>
+</svg>

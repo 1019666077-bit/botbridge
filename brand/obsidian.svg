@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img">
+  <title>Obsidian Bridge</title>
+  <desc>Product mark for Obsidian Bridge. A white vault note with a cyan folded corner.</desc>
+  <defs>
+    <linearGradient id="bg" x1="16%" y1="0%" x2="84%" y2="100%">
+      <stop offset="0%" stop-color="#1B265C"/>
+      <stop offset="40%" stop-color="#101533"/>
+      <stop offset="100%" stop-color="#060814"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx="50%" cy="36%" r="58%">
+      <stop offset="0%" stop-color="#7488EE" stop-opacity="0.40"/>
+      <stop offset="50%" stop-color="#2C3B86" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#2C3B86" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="paper" gradientUnits="userSpaceOnUse" x1="256" y1="100" x2="256" y2="412">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E6EEF7"/>
+    </linearGradient>
+    <linearGradient id="cyan" gradientUnits="userSpaceOnUse" x1="300" y1="100" x2="366" y2="190">
+      <stop offset="0%" stop-color="#D8FCFF"/>
+      <stop offset="50%" stop-color="#2AD4FF"/>
+      <stop offset="100%" stop-color="#00A6E4"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8FF5FF"/>
+      <stop offset="100%" stop-color="#00B4EA"/>
+    </linearGradient>
+    <clipPath id="page">
+      <rect x="146" y="100" width="220" height="312" rx="42"/>
+    </clipPath>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="118" fill="url(#sheen)"/>
+  <g clip-path="url(#page)">
+    <rect x="146" y="100" width="220" height="312" fill="url(#paper)"/>
+    <path d="M286 100H366V180Z" fill="url(#cyan)"/>
+    <path d="M286 100L366 180" fill="none" stroke="#071422" stroke-opacity="0.16" stroke-width="7" stroke-linecap="round"/>
+    <rect x="178" y="214" width="156" height="18" rx="9" fill="url(#rule)"/>
+    <rect x="178" y="250" width="124" height="18" rx="9" fill="url(#rule)"/>
+    <rect x="178" y="286" width="92" height="18" rx="9" fill="url(#rule)"/>
+  </g>
+</svg>

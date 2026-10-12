@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img">
+  <title>Webcam Bridge</title>
+  <desc>Product mark for Webcam Bridge. A white camera with a cyan lens on a deep navy rounded square.</desc>
+  <defs>
+    <linearGradient id="bg" x1="16%" y1="0%" x2="84%" y2="100%">
+      <stop offset="0%" stop-color="#1B265C"/>
+      <stop offset="40%" stop-color="#101533"/>
+      <stop offset="100%" stop-color="#060814"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx="50%" cy="36%" r="58%">
+      <stop offset="0%" stop-color="#7488EE" stop-opacity="0.40"/>
+      <stop offset="50%" stop-color="#2C3B86" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#2C3B86" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="paper" gradientUnits="userSpaceOnUse" x1="256" y1="108" x2="256" y2="408">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E5EDF6"/>
+    </linearGradient>
+    <linearGradient id="cyan" gradientUnits="userSpaceOnUse" x1="360" y1="190" x2="400" y2="240">
+      <stop offset="0%" stop-color="#B8FAFF"/>
+      <stop offset="55%" stop-color="#2AD4FF"/>
+      <stop offset="100%" stop-color="#00A0DE"/>
+    </linearGradient>
+    <radialGradient id="lens" cx="40%" cy="36%" r="70%">
+      <stop offset="0%" stop-color="#E7FDFF"/>
+      <stop offset="20%" stop-color="#6EEBFF"/>
+      <stop offset="55%" stop-color="#00C2F2"/>
+      <stop offset="100%" stop-color="#0074B8"/>
+    </radialGradient>
+    <radialGradient id="spec" cx="45%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+      <stop offset="55%" stop-color="#FFFFFF" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="118" fill="url(#sheen)"/>
+  <!-- Viewfinder extends under the body so the shared fill has no seam. -->
+  <rect x="190" y="116" width="132" height="96" rx="24" fill="url(#paper)"/>
+  <rect x="72" y="170" width="368" height="228" rx="52" fill="url(#paper)"/>
+  <circle cx="248" cy="286" r="88" fill="#07101E"/>
+  <circle cx="248" cy="286" r="66" fill="url(#lens)"/>
+  <circle cx="248" cy="286" r="34" fill="#06202F"/>
+  <circle cx="224" cy="260" r="26" fill="url(#spec)"/>
+  <circle cx="218" cy="254" r="8" fill="#FFFFFF"/>
+  <circle cx="386" cy="216" r="14" fill="url(#cyan)"/>
+</svg>

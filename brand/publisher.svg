@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img">
+  <title>Bot Bridge</title>
+  <desc>Publisher mark. A white bridge arch links three cyan bot nodes on a deep navy rounded square.</desc>
+  <defs>
+    <linearGradient id="bg" x1="16%" y1="0%" x2="84%" y2="100%">
+      <stop offset="0%" stop-color="#1B265C"/>
+      <stop offset="40%" stop-color="#101533"/>
+      <stop offset="100%" stop-color="#060814"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx="50%" cy="36%" r="58%">
+      <stop offset="0%" stop-color="#7488EE" stop-opacity="0.40"/>
+      <stop offset="50%" stop-color="#2C3B86" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#2C3B86" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="paper" gradientUnits="userSpaceOnUse" x1="256" y1="160" x2="256" y2="360">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F4F7FB"/>
+    </linearGradient>
+    <radialGradient id="orb" cx="35%" cy="32%" r="70%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="16%" stop-color="#E5FCFF"/>
+      <stop offset="48%" stop-color="#3AD8FF"/>
+      <stop offset="100%" stop-color="#00B6EA"/>
+    </radialGradient>
+    <radialGradient id="bloom" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#8AF6FF" stop-opacity="0.85"/>
+      <stop offset="22%" stop-color="#2AD4FF" stop-opacity="0.50"/>
+      <stop offset="58%" stop-color="#2AD4FF" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#2AD4FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="118" fill="url(#sheen)"/>
+  <g fill="url(#bloom)">
+    <circle cx="144" cy="312" r="78"/>
+    <circle cx="368" cy="312" r="78"/>
+    <circle cx="256" cy="200" r="78"/>
+  </g>
+  <!-- Semicircle of radius 112, centered at (256, 312). Kappa = 0.5523. -->
+  <path d="M144 312C144 250.1 194.1 200 256 200C317.9 200 368 250.1 368 312" fill="none" stroke="url(#paper)" stroke-width="44" stroke-linecap="round"/>
+  <g fill="url(#orb)">
+    <circle cx="144" cy="312" r="38"/>
+    <circle cx="368" cy="312" r="38"/>
+    <circle cx="256" cy="200" r="38"/>
+  </g>
+</svg>
