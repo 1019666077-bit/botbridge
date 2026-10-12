@@ -196,3 +196,70 @@ async function deactivate() {
    在本机无法验证 Helper 的算法，**这一步必须等能碰到笔记本源码的人来做**。
    未来的强防伪方案（Ed25519 签名码，参考 CullGrid 的 `license:issue`）另行设计，
    本次**不**往仓库里塞任何私钥。
+
+## 4. 远程批准（可选，Pro）：把一步高风险操作交给手机确认
+
+场景：Helper 要做一件「不该无人值守自动跑」的事（大额下单、群发、删除数据），
+就把这一步暂停，让用户在**手机上**点一下确认。服务端新增三个端点，规则：
+
+- `POST /api/pro/approval`：**只有有效 Pro** 能开（激活码格式/校验和正确、license `active` 且未过期、
+  且 `machineId` **已绑定**），返回 `{ token, approveUrl, pollUrl, expiresAt }`。
+  `approveUrl` 是手机要打开的链接（建议生成二维码）。
+- token 是**不透明**的 24 小时凭证，答案**一次性**；`GET /api/pro/approval?t=…&code=…&machineId=…`
+  必须带上**开出它的**激活码与机器号才能读，别人拿到 token 也读不到你的批准。
+- 超过 24 小时 → `expired`；重复作答 → 第一次的答案生效。
+
+Helper 侧草图（沿用第 2 节的 `machineId()` 与 `readLicense()`）：
+
+```js
+const APPROVAL_POLL_MS = 2000;
+const APPROVAL_TIMEOUT_MS = 5 * 60 * 1000; // 手机上一直没人点就放弃
+
+/**
+ * 请求一次远程批准；返回 'approved' | 'cancelled' | 'expired' | 'timeout'。
+ * onShowUrl(approveUrl) 用来把链接变成二维码/提示给用户。
+ */
+async function requestApproval({ taskId, title, screenshotUrl }, onShowUrl) {
+  const lic = readLicense();
+  if (!lic || !lic.key) throw new Error('not_activated');
+
+  const res = await fetch('https://botbridge.dev/api/pro/approval', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify({
+      code: lic.key,
+      machineId: machineId(),
+      taskId: String(taskId),
+      title: String(title).slice(0, 200),          // 服务端同样限制 200 字
+      ...(screenshotUrl ? { screenshotUrl } : {}),  // 远程图片优先；base64 只允许 <200KB
+    }),
+  });
+  if (res.status === 403 || res.status === 404) throw new Error('pro_required'); // 未绑机/已退款/过期
+  if (!res.ok) throw new Error('approval_failed');
+  const { approveUrl, pollUrl } = await res.json();
+  onShowUrl(approveUrl);                            // 二维码：让用户用手机扫
+
+  const deadline = Date.now() + APPROVAL_TIMEOUT_MS;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, APPROVAL_POLL_MS)); // 别打太快：服务端有轻限流
+    const poll = await fetch(pollUrl, { headers: { accept: 'application/json' } });
+    if (poll.status === 429) continue;              // 被限流就等下一轮
+    if (!poll.ok) throw new Error('approval_failed');
+    const { status } = await poll.json();
+    if (status !== 'pending') return status;        // approved / cancelled / expired
+  }
+  return 'timeout';
+}
+
+// 用法：只有拿到 'approved' 才继续执行那一步高风险操作
+if ((await requestApproval({ taskId, title, screenshotUrl }, showQr)) === 'approved') {
+  await runTheRiskyStep();
+}
+```
+
+几点必须对齐：
+
+1. **只在 `approved` 时放行**；`cancelled` / `expired` / `timeout` 一律当拒绝处理，不要 fail-open。
+2. **一次性**：同一 token 第二次点击不生效（第一次的答案为准），所以批准后 Helper 要缓存该 token 已用。
+3. **机器绑定**：换机后旧 token 的 `pollUrl` 会因为 `machineId` 不匹配而 404 —— 这是故意的。
+4. 页面链接域名是 `botbridge.dev`；在 Helper 里只做展示（二维码），不要自己去 GET 那个页面。

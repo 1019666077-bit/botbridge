@@ -81,3 +81,10 @@ test('verifyCode reports a reason on failure', () => {
   assert.equal(res.valid, false);
   assert.equal(typeof res.reason, 'string');
 });
+
+test('verifyCode treats the product prefix literally, not as a regex', () => {
+  const code = mintCode({ prefix: 'WXP', rng: seqRng([5, 5, 5, 5, 5, 5, 5, 5]) });
+  assert.equal(verifyCode(code, { prefix: 'WXP' }).valid, true);
+  // "W.P" would match "WXP" if the prefix were interpolated unescaped.
+  assert.equal(verifyCode(code, { prefix: 'W.P' }).valid, false);
+});
