@@ -14,7 +14,7 @@ assets = { directory = ".", binding = "ASSETS", not_found_handling = "404-page" 
 #   npx wrangler kv namespace create LICENSES
 [[kv_namespaces]]
 binding = "LICENSES"
-id = "REPLACE_WITH_LICENSES_KV_NAMESPACE_ID"
+id = "21f2ded01837433a9f6a621016d24939"
 
 # Secrets are set out-of-band, never committed (see docs/WAFFO-LICENSE-FULFILLMENT.md):
 #   npx wrangler secret put WAFFO_WEBHOOK_PUBLIC_KEY
