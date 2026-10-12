@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Claim your CC Helper Pro key · Bot Bridge</title>
+  <meta name="description" content="Already bought Bot Bridge CC Helper Pro? Enter the email and order id from your Waffo receipt to get your Pro key and license.json instantly." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#f7f7f5" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .claim-form { display: grid; gap: 14px; margin: 20px 0 8px; }
+    .field { display: grid; gap: 6px; }
+    .field label { font-weight: 600; font-size: 0.92rem; }
+    .field input {
+      font: inherit; color: var(--fg); background: var(--surface);
+      border: 1px solid var(--line); border-radius: var(--radius-sm);
+      padding: 11px 13px; box-shadow: var(--shadow-sm);
+    }
+    .field input:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
+    .field .hint { color: var(--muted); font-size: 0.82rem; }
+    .claim-form button {
+      font: inherit; font-weight: 600; cursor: pointer; border: 0;
+      color: #fff; background: var(--accent); border-radius: var(--radius-sm);
+      padding: 12px 18px; box-shadow: var(--shadow-sm); justify-self: start;
+    }
+    .claim-form button:hover { background: var(--accent-hover); }
+    .claim-form button[disabled] { opacity: 0.6; cursor: progress; }
+    .result { margin-top: 22px; }
+    .result[hidden] { display: none; }
+    .code-box {
+      font-family: var(--mono); font-size: 1.25rem; letter-spacing: 0.06em;
+      background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      color: var(--fg); border-radius: var(--radius-sm); padding: 14px 16px; margin: 10px 0;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+    }
+    .result .meta { color: var(--muted); font-size: 0.92rem; }
+    .result .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .msg { border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 18px; }
+    .msg.err { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .msg[hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <a class="brand" href="/cc-helper">
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <div>
+          <span class="brand-name">Bot Bridge</span>
+          <p>CC Helper · Pro key</p>
+        </div>
+      </a>
+      <a class="ghost" href="/cc-helper">← Back to CC Helper</a>
+    </header>
+
+    <main class="article">
+      <p class="zh-gloss">中文说明：付款后凭收据邮箱 + 订单号，自助领取 Pro 激活码</p>
+      <h1>Claim your Pro key</h1>
+      <p class="lead">Tell us the email and order id from your Waffo receipt and we will hand you the Pro key and the <code>license.json</code> for the Windows Helper — instantly, no waiting for a human.</p>
+
+      <form class="claim-form" id="claim-form" novalidate>
+        <div class="field">
+          <label for="email">Email used at checkout</label>
+          <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label for="orderId">Order id from your receipt</label>
+          <input id="orderId" name="orderId" type="text" autocomplete="off" required placeholder="ord_…" />
+          <span class="hint">It is in the Waffo confirmation email you received after paying. Order ids start with <code>ord_</code>.</span>
+        </div>
+        <button type="submit" id="submit">Get my key</button>
+      </form>
+
+      <div class="msg err" id="error" hidden role="alert"></div>
+
+      <section class="result" id="result" hidden aria-live="polite">
+        <h2>Your Pro key</h2>
+        <div class="code-box">
+          <span id="code">—</span>
+        </div>
+        <p class="meta" id="expiry"></p>
+        <div class="actions">
+          <button type="button" class="cta-ghost" id="download">Download license.json</button>
+          <button type="button" class="cta-ghost" id="copy">Copy key</button>
+        </div>
+      </section>
+
+      <div class="note">
+        <strong>How to activate.</strong> In the Windows Helper tray, choose <em>Activate Pro</em> and paste the key — or drop the downloaded <code>license.json</code> into the Helper's data folder. The key stays valid through the paid period; renewals extend it automatically.
+      </div>
+
+      <p class="caption">Can’t find your order id, or paid with a different email? Write to <a href="mailto:moying.studio@outlook.com?subject=CC%20Helper%20Pro%20key">moying.studio@outlook.com</a> and we will sort it out.</p>
+    </main>
+
+    <footer class="legal">
+      <a href="/">Bot Bridge</a>
+      <a href="/cc-helper">CC Helper</a>
+      <a href="/cc-helper#terms">Terms</a>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var form = document.getElementById('claim-form');
+      var submit = document.getElementById('submit');
+      var errorEl = document.getElementById('error');
+      var resultEl = document.getElementById('result');
+      var codeEl = document.getElementById('code');
+      var expiryEl = document.getElementById('expiry');
+      var downloadBtn = document.getElementById('download');
+      var copyBtn = document.getElementById('copy');
+      var license = null;
+
+      var MESSAGES = {
+        400: 'Please fill in both the email and the order id.',
+        403: 'This license is no longer active (it was refunded or cancelled). Contact us if you think that is wrong.',
+        404: 'We could not match that email and order id. Double-check both against your Waffo receipt.',
+        429: 'Too many attempts just now — please wait a minute and try again.',
+      };
+
+      function showError(text) {
+        errorEl.textContent = text;
+        errorEl.hidden = false;
+      }
+
+      function clearError() {
+        errorEl.hidden = true;
+        errorEl.textContent = '';
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        clearError();
+        resultEl.hidden = true;
+        license = null;
+
+        var email = document.getElementById('email').value.trim();
+        var orderId = document.getElementById('orderId').value.trim();
+        if (!email || !orderId) {
+          showError(MESSAGES[400]);
+          return;
+        }
+
+        submit.disabled = true;
+        submit.textContent = 'Checking…';
+        try {
+          var res = await fetch(
+            '/api/license/claim?email=' + encodeURIComponent(email) + '&orderId=' + encodeURIComponent(orderId),
+            { headers: { accept: 'application/json' } }
+          );
+          var body = await res.json().catch(function () { return {}; });
+          if (!res.ok) {
+            showError(MESSAGES[res.status] || 'Something went wrong on our side. Please try again in a moment.');
+            return;
+          }
+          license = body.licenseJson || null;
+          codeEl.textContent = body.code;
+          expiryEl.textContent = body.expiresAt
+            ? 'Valid through ' + new Date(body.expiresAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }) + ' (UTC).'
+            : 'No expiry on this license.';
+          resultEl.hidden = false;
+          resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (err) {
+          showError('Network error — check your connection and try again.');
+        } finally {
+          submit.disabled = false;
+          submit.textContent = 'Get my key';
+        }
+      });
+
+      downloadBtn.addEventListener('click', function () {
+        if (!license) return;
+        var blob = new Blob([JSON.stringify(license, null, 2) + '\n'], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'license.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      copyBtn.addEventListener('click', async function () {
+        try {
+          await navigator.clipboard.writeText(codeEl.textContent);
+          copyBtn.textContent = 'Copied!';
+          setTimeout(function () { copyBtn.textContent = 'Copy key'; }, 1600);
+        } catch (err) {
+          showError('Copy failed — select the key above and copy it manually.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

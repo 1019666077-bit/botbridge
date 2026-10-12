@@ -1,0 +1,26 @@
+name = "botbridge-site"
+compatibility_date = "2026-10-12"
+main = "worker.js"
+
+# Static site is served from the repo root through the ASSETS binding; the
+# Worker handles /api/* first and falls back to env.ASSETS.fetch() for the rest.
+assets = { directory = ".", binding = "ASSETS", not_found_handling = "404-page" }
+
+# License store for CC Helper Pro fulfillment.
+# Keys: order:<orderId>, code:<CODE>, email:<email>:<orderId>, event:<deliveryId>, rl:*
+#
+# Create it once (needs a Cloudflare login with access to the botbridge-site
+# account), then paste the printed id below and deploy:
+#   npx wrangler kv namespace create LICENSES
+[[kv_namespaces]]
+binding = "LICENSES"
+id = "21f2ded01837433a9f6a621016d24939"
+
+# Secrets are set out-of-band, never committed (see docs/WAFFO-LICENSE-FULFILLMENT.md):
+#   npx wrangler secret put WAFFO_WEBHOOK_PUBLIC_KEY
+#
+# Optional plain vars (uncomment to override the defaults in worker.js):
+# [vars]
+# CC_HELPER_PRODUCT_ID = "PROD_4rpv1XspFZwARrTFDfvlmY"
+# CC_HELPER_PRODUCT_NAME = "CC Helper Pro"
+# CC_HELPER_REQUIRE_PRODUCT_MATCH = "0"
