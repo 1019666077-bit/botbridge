@@ -1,0 +1,10 @@
+{
+  "name": "botbridge-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static site + Cloudflare Worker for botbridge.dev (CC Helper Pro license fulfillment).",
+  "scripts": {
+    "test": "node --test 'test/*.test.js'"
+  }
+}
