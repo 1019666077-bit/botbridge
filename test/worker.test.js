@@ -1,10 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateKeyPairSync, createSign } from 'node:crypto';
-import worker, { handleWebhook, handleClaim, handleLookup } from '../worker.js';
+import worker, {
+  handleWebhook,
+  handleClaim,
+  handleLookup,
+  handleActivate,
+  handleValidate,
+  handleDeactivate,
+} from '../worker.js';
+import { mintCode } from '../lib/cch-code.js';
 
 const PROD = 'PROD_4rpv1XspFZwARrTFDfvlmY';
 const OTHER_PROD = 'PROD_somethingelse';
+const TEST_PROD = 'PROD_4H2br9vXCUBpKU7kKBFtBF';
 const EMAIL = 'buyer@example.com';
 
 const { publicKey, privateKey } = generateKeyPairSync('rsa', {
@@ -70,6 +79,24 @@ function claimUrl(email = EMAIL, orderId = 'ord_1') {
   return new Request(`https://botbridge.dev/api/license/claim?email=${encodeURIComponent(email)}&orderId=${orderId}`);
 }
 
+function jsonReq(path, body) {
+  return new Request(`https://botbridge.dev${path}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
+// Mint an active license through the real webhook path and return its code.
+async function seedLicense(env, { orderId = 'ord_1', email = EMAIL, periodEnd = '2027-10-12' } = {}) {
+  const ev = event('subscription.activated', { orderId, buyerEmail: email, currentPeriodEnd: periodEnd }, { id: `evt_${orderId}` });
+  const res = await handleWebhook(signedRequest(ev, { id: `evt_${orderId}` }), env);
+  assert.equal(res.status, 200);
+  const record = await env.LICENSES.get(`order:${orderId}`, 'json');
+  assert.ok(record && record.code, 'webhook should have minted a code');
+  return record.code;
+}
+
 test('activated webhook mints a code that claim and lookup both return', async () => {
   const env = makeEnv();
   const res = await handleWebhook(signedRequest(event('subscription.activated', { currentPeriodEnd: '2027-10-12' })), env);
@@ -133,8 +160,160 @@ test('events for another product are ignored and store nothing', async () => {
 
 test('an unrelated event type is ignored', async () => {
   const env = makeEnv();
-  const res = await handleWebhook(signedRequest(event('order.completed')), env);
+  const res = await handleWebhook(signedRequest(event('subscription.past_due')), env);
   assert.deepEqual(await res.json(), { ok: true, action: 'ignore', ignored: 'event_type' });
+});
+
+test('a one-time order.completed for the configured test product mints a capped test license', async () => {
+  const env = makeEnv({ CC_HELPER_TEST_PRODUCT_ID: TEST_PROD });
+  const buyer = 'moying.studio@outlook.com';
+  const ev = event(
+    'order.completed',
+    {
+      orderId: 'ORD_test_1',
+      buyerEmail: buyer,
+      productMetadata: { productId: TEST_PROD },
+      currentPeriodEnd: '2099-01-01',
+    },
+    { id: 'evt_test_order_1' },
+  );
+  const res = await handleWebhook(signedRequest(ev, { id: 'evt_test_order_1' }), env);
+  assert.deepEqual(await res.json(), { ok: true, action: 'activate', ignored: null, orderId: 'ORD_test_1' });
+
+  const claim = await handleClaim(claimUrl(buyer, 'ORD_test_1'), env);
+  assert.equal(claim.status, 200);
+  const body = await claim.json();
+  assert.equal(body.isTest, true);
+  const ms = Date.parse(body.expiresAt);
+  assert.ok(ms > Date.now(), 'test license is still valid now');
+  assert.ok(ms <= Date.now() + 7 * 86400000 + 5000, 'test license is capped at 7 days');
+  assert.equal(body.licenseJson.isTest, true);
+});
+
+test('an explicit test-mode event marks the license isTest even for the live product', async () => {
+  const env = makeEnv({ CC_HELPER_TEST_PRODUCT_ID: '' });
+  const ev = event('subscription.activated', { orderId: 'ord_mode_test', currentPeriodEnd: '2027-10-12' }, { id: 'evt_mode_test', mode: 'test' });
+  const res = await handleWebhook(signedRequest(ev, { id: 'evt_mode_test' }), env);
+  assert.equal(res.status, 200);
+  const body = await (await handleClaim(claimUrl(EMAIL, 'ord_mode_test'), env)).json();
+  assert.equal(body.isTest, true);
+  assert.ok(Date.parse(body.expiresAt) <= Date.now() + 7 * 86400000 + 5000);
+});
+
+test('activate binds a machine and returns a license bound to it', async () => {
+  const env = makeEnv();
+  const code = await seedLicense(env);
+  const res = await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'machine-a' }), env);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.ok, true);
+  assert.equal(body.code, code);
+  assert.equal(body.machines.length, 1);
+  assert.equal(body.machines[0].machineId, 'machine-a');
+  assert.equal(body.licenseJson.key, code);
+  assert.equal(body.licenseJson.machineId, 'machine-a');
+  assert.equal(body.licenseJson.expiresAt, '2027-10-12T23:59:59.999Z');
+
+  const record = await env.LICENSES.get('order:ord_1', 'json');
+  assert.equal(record.machines.length, 1);
+});
+
+test('activate accepts two machines, rejects a third, but re-binds an existing one', async () => {
+  const env = makeEnv();
+  const code = await seedLicense(env);
+  assert.equal((await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm1' }), env)).status, 200);
+  assert.equal((await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm2' }), env)).status, 200);
+
+  const third = await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm3' }), env);
+  assert.equal(third.status, 409);
+  const thirdBody = await third.json();
+  assert.equal(thirdBody.error, 'machine_limit');
+  assert.equal(thirdBody.max, 2);
+
+  const repeat = await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm1' }), env);
+  assert.equal(repeat.status, 200);
+  const record = await env.LICENSES.get('order:ord_1', 'json');
+  assert.equal(record.machines.length, 2);
+});
+
+test('activate rejects a revoked license, an unknown code and a missing machine id', async () => {
+  const env = makeEnv();
+  const code = await seedLicense(env);
+  await handleWebhook(signedRequest(event('refund.succeeded', { orderId: 'ord_1' }, { id: 'evt_refund_1' })), env);
+  assert.equal((await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm1' }), env)).status, 403);
+
+  const unknown = await handleActivate(jsonReq('/api/pro/activate', { code: mintCode(), machineId: 'm1' }), env);
+  assert.equal(unknown.status, 404);
+
+  const noMachine = await handleActivate(jsonReq('/api/pro/activate', { code }), env);
+  assert.equal(noMachine.status, 400);
+  assert.equal((await noMachine.json()).error, 'missing_machine_id');
+});
+
+test('validate accepts a bound active machine and rejects unbound or expired ones', async () => {
+  const env = makeEnv();
+  const code = await seedLicense(env);
+  await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm1' }), env);
+
+  const ok = await handleValidate(jsonReq('/api/pro/validate', { code, machineId: 'm1' }), env);
+  assert.equal(ok.status, 200);
+  const okBody = await ok.json();
+  assert.equal(okBody.valid, true);
+  assert.equal(okBody.expiresAt, '2027-10-12T23:59:59.999Z');
+
+  const unbound = await handleValidate(jsonReq('/api/pro/validate', { code, machineId: 'never-seen' }), env);
+  const unboundBody = await unbound.json();
+  assert.equal(unboundBody.valid, false);
+  assert.equal(unboundBody.reason, 'machine_not_bound');
+
+  const expiredEnv = makeEnv();
+  const expiredCode = await seedLicense(expiredEnv, { orderId: 'ord_exp', periodEnd: '2020-01-01' });
+  const expired = await handleValidate(jsonReq('/api/pro/validate', { code: expiredCode, machineId: 'm1' }), expiredEnv);
+  const expiredBody = await expired.json();
+  assert.equal(expiredBody.valid, false);
+  assert.equal(expiredBody.reason, 'expired');
+});
+
+test('validate never fails open when machineId is missing', async () => {
+  const env = makeEnv();
+  const code = await seedLicense(env);
+  await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm1' }), env);
+
+  const missing = await handleValidate(jsonReq('/api/pro/validate', { code }), env);
+  assert.equal(missing.status, 400);
+  const missingBody = await missing.json();
+  assert.equal(missingBody.valid, false);
+  assert.equal(missingBody.reason, 'missing_machine_id');
+});
+
+test('deactivate unbinds a machine and is idempotent', async () => {
+  const env = makeEnv();
+  const code = await seedLicense(env);
+  await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm1' }), env);
+  await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm2' }), env);
+
+  const res = await handleDeactivate(jsonReq('/api/pro/deactivate', { code, machineId: 'm1' }), env);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.ok, true);
+  assert.equal(body.machines.length, 1);
+  assert.equal(body.machines[0].machineId, 'm2');
+
+  // A freed slot can be taken by a new machine.
+  assert.equal((await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm3' }), env)).status, 200);
+
+  const ghost = await handleDeactivate(jsonReq('/api/pro/deactivate', { code, machineId: 'never' }), env);
+  assert.equal(ghost.status, 200);
+  assert.equal((await ghost.json()).removed, false);
+});
+
+test('claim lists bound machines for the success page', async () => {
+  const env = makeEnv();
+  const code = await seedLicense(env);
+  await handleActivate(jsonReq('/api/pro/activate', { code, machineId: 'm1' }), env);
+  const body = await (await handleClaim(claimUrl(), env)).json();
+  assert.equal(body.machines.length, 1);
+  assert.equal(body.machines[0].machineId, 'm1');
 });
 
 test('subscription.renewed extends the stored expiry', async () => {
@@ -184,6 +363,18 @@ test('router: wrong method on the webhook is 405, unknown paths fall through to 
 
   const page = await worker.fetch(new Request('https://botbridge.dev/cc-helper/'), env);
   assert.equal(await page.text(), 'asset');
+});
+
+test('router: /api/pro/activate dispatches on POST and rejects GET', async () => {
+  const env = makeEnv();
+  const code = await seedLicense(env);
+
+  const ok = await worker.fetch(jsonReq('/api/pro/activate', { code, machineId: 'm1' }), env);
+  assert.equal(ok.status, 200);
+  assert.equal((await ok.json()).licenseJson.machineId, 'm1');
+
+  const get = await worker.fetch(new Request('https://botbridge.dev/api/pro/activate'), env);
+  assert.equal(get.status, 405);
 });
 
 test('router: an internal failure returns 500 rather than crashing', async () => {

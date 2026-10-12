@@ -42,7 +42,24 @@
     .result .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
     .msg { border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 18px; }
     .msg.err { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .msg.test { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
     .msg[hidden] { display: none; }
+    .machines { margin-top: 18px; }
+    .machines[hidden] { display: none; }
+    .machines h3 { margin: 0 0 8px; font-size: 1rem; }
+    .machines ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .machines li {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius-sm); padding: 9px 12px;
+    }
+    .machines code { font-family: var(--mono); font-size: 0.86rem; word-break: break-all; }
+    .machines button {
+      font: inherit; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
+      color: #991b1b; background: #fff; border: 1px solid #fecaca;
+      border-radius: var(--radius-sm); padding: 6px 12px;
+    }
+    .machines button[disabled] { opacity: 0.6; cursor: progress; }
   </style>
 </head>
 <body>
@@ -71,7 +88,7 @@
         <div class="field">
           <label for="orderId">Order id from your receipt</label>
           <input id="orderId" name="orderId" type="text" autocomplete="off" required placeholder="ord_…" />
-          <span class="hint">It is in the Waffo confirmation email you received after paying. Order ids start with <code>ord_</code>.</span>
+          <span class="hint">It is in the Waffo confirmation email you received after paying. Order ids start with <code>ord_</code> / <code>ORD_</code>.</span>
         </div>
         <button type="submit" id="submit">Get my key</button>
       </form>
@@ -88,10 +105,18 @@
           <button type="button" class="cta-ghost" id="download">Download license.json</button>
           <button type="button" class="cta-ghost" id="copy">Copy key</button>
         </div>
+        <div class="msg test" id="test-notice" hidden role="status">
+          This is a <strong>test license</strong> from a Waffo Test&nbsp;Mode order. It expires shortly and is not a paid Pro license.
+        </div>
+        <div class="machines" id="machines-wrap" hidden>
+          <h3>Activated on</h3>
+          <ul id="machines"></ul>
+          <p class="meta">A key works on up to <strong>2 machines</strong>. Unbind a machine to free a slot for another one.</p>
+        </div>
       </section>
 
       <div class="note">
-        <strong>How to activate.</strong> In the Windows Helper tray, choose <em>Activate Pro</em> and paste the key — or drop the downloaded <code>license.json</code> into the Helper's data folder. The key stays valid through the paid period; renewals extend it automatically.
+        <strong>How to activate.</strong> In the Windows Helper tray, choose <em>Activate Pro</em> and paste the key — the Helper registers this PC online (a key works on up to 2 machines). You can also drop the downloaded <code>license.json</code> into the Helper's data folder. The key stays valid through the paid period; renewals extend it automatically.
       </div>
 
       <p class="caption">Can’t find your order id, or paid with a different email? Write to <a href="mailto:moying.studio@outlook.com?subject=CC%20Helper%20Pro%20key">moying.studio@outlook.com</a> and we will sort it out.</p>
@@ -114,7 +139,12 @@
       var expiryEl = document.getElementById('expiry');
       var downloadBtn = document.getElementById('download');
       var copyBtn = document.getElementById('copy');
+      var machinesWrap = document.getElementById('machines-wrap');
+      var machinesList = document.getElementById('machines');
+      var testNotice = document.getElementById('test-notice');
       var license = null;
+      var currentCode = null;
+      var machines = [];
 
       var MESSAGES = {
         400: 'Please fill in both the email and the order id.',
@@ -133,11 +163,62 @@
         errorEl.textContent = '';
       }
 
+      function renderMachines() {
+        machinesList.textContent = '';
+        if (!currentCode || !machines.length) {
+          machinesWrap.hidden = true;
+          return;
+        }
+        machines.forEach(function (m) {
+          var li = document.createElement('li');
+          var name = document.createElement('code');
+          name.textContent = m.machineId;
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = 'Unbind';
+          btn.addEventListener('click', function () { unbind(m.machineId, btn); });
+          li.appendChild(name);
+          li.appendChild(btn);
+          machinesList.appendChild(li);
+        });
+        machinesWrap.hidden = false;
+      }
+
+      async function unbind(machineId, btn) {
+        btn.disabled = true;
+        btn.textContent = 'Unbinding…';
+        clearError();
+        try {
+          var res = await fetch('/api/pro/deactivate', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', accept: 'application/json' },
+            body: JSON.stringify({ code: currentCode, machineId: machineId }),
+          });
+          var body = await res.json().catch(function () { return {}; });
+          if (!res.ok) {
+            showError(MESSAGES[res.status] || 'Could not unbind that machine. Please try again in a moment.');
+            btn.disabled = false;
+            btn.textContent = 'Unbind';
+            return;
+          }
+          machines = Array.isArray(body.machines) ? body.machines : [];
+          renderMachines();
+        } catch (err) {
+          showError('Network error — check your connection and try again.');
+          btn.disabled = false;
+          btn.textContent = 'Unbind';
+        }
+      }
+
       form.addEventListener('submit', async function (e) {
         e.preventDefault();
         clearError();
         resultEl.hidden = true;
         license = null;
+        currentCode = null;
+        machines = [];
+        testNotice.hidden = true;
+        renderMachines();
 
         var email = document.getElementById('email').value.trim();
         var orderId = document.getElementById('orderId').value.trim();
@@ -159,10 +240,14 @@
             return;
           }
           license = body.licenseJson || null;
+          currentCode = body.code || null;
+          machines = Array.isArray(body.machines) ? body.machines : [];
           codeEl.textContent = body.code;
           expiryEl.textContent = body.expiresAt
             ? 'Valid through ' + new Date(body.expiresAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }) + ' (UTC).'
             : 'No expiry on this license.';
+          testNotice.hidden = !body.isTest;
+          renderMachines();
           resultEl.hidden = false;
           resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } catch (err) {
