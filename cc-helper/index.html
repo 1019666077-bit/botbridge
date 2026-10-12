@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Bot Bridge / CC Helper · Local Claude Code for Cursor &amp; Grok Bot | Moying</title>
-  <meta name="description" content="Free thin Cursor/Grok Bot plugin (skills + soft hooks) plus a Windows desktop Helper for realtime Claude Code dispatch. Free loop vs Pro budget caps, stall timeout, Bark/webhook." />
+  <title>Bot Bridge CC Helper · Let a bot dispatch Claude Code on your PC | Moying</title>
+  <meta name="description" content="Let Cursor or Grok Bot dispatch real tasks to Claude Code on your own Windows PC: the bot writes a job into a local inbox, the Helper runs it and reports progress. Free plugin is MIT; Pro $29/year adds hard budget caps, stall kill, and Bark/webhook phone alerts." />
   <link rel="canonical" href="https://botbridge.dev/cc-helper" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#f7f7f5" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Bot Bridge" />
   <meta property="og:url" content="https://botbridge.dev/cc-helper" />
-  <meta property="og:title" content="Bot Bridge / CC Helper · Local Claude Code control" />
-  <meta property="og:description" content="Free plugin for Cursor and Grok Bot. Desktop Helper for realtime progress. Pro adds hard budget caps, stall timeout, and Bark/webhook alerts." />
+  <meta property="og:title" content="Bot Bridge CC Helper · bot-to-desktop dispatch for Claude Code" />
+  <meta property="og:description" content="Your bot plans; your PC executes. Cursor and Grok Bot write jobs into a local inbox, the Helper runs Claude Code and shows progress. Pro $29/year: hard budget caps, stall kill, Bark/webhook alerts." />
   <meta property="og:image" content="https://botbridge.dev/favicon.svg" />
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Bot Bridge / CC Helper" />
-  <meta name="twitter:description" content="Free Cursor/Grok Bot plugin + Windows Helper for realtime Claude Code. Pro: budget cap, stall kill, Bark/webhook." />
+  <meta name="twitter:title" content="Bot Bridge CC Helper" />
+  <meta name="twitter:description" content="Bot-to-desktop dispatch for Claude Code. Free Cursor/Grok Bot plugin + Windows Helper. Pro $29/year: budget cap, stall kill, phone push." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -36,28 +36,34 @@
     </header>
 
     <main class="article">
-      <p class="zh-gloss">中文名：CC Helper · 产品名 Bot Bridge</p>
-      <h1>Bot Bridge / CC Helper</h1>
-      <p class="zh-gloss brand-line">Bot Bridge · 让 Agent 更好地用上你的本机能力</p>
-      <p class="lead">Let Cursor or Grok Bot hand real work to Claude Code on your Windows PC — with a free thin plugin for discovery, and a local desktop Helper for realtime control.</p>
-      <p class="zh-gloss">用免费薄插件让机器人会派活；真正的实时进度、监督和 Pro 硬限制，在本机桌面 Helper 里。</p>
+      <p class="zh-gloss">中文说明：远程 bot 派活 · 本机 Helper 执行与盯梢</p>
+      <h1>Bot Bridge CC Helper</h1>
+      <p class="zh-gloss brand-line">远程 bot 把活派到你本机的 Claude Code</p>
+      <p class="lead">Your bot does the planning; the Helper does the running. Ask Cursor or Grok Bot to hand a real task to Claude Code on your own Windows PC — the bot writes the job into a local inbox, the Helper runs it, and you watch progress from the tray instead of babysitting a terminal.</p>
+      <p class="zh-gloss">远程 bot 负责派活，本机 Helper 负责执行：bot 把任务写进本机 inbox，Helper 跑 Claude Code 并回报进度，你在托盘盯梢，不用守着终端。</p>
 
-      <p class="audience"><strong>For Cursor and Grok Bot</strong> (Agent / Bot plugins). · <strong>面向 Cursor 与 Grok Bot</strong>（Agent / Bot 插件）。</p>
+      <p class="audience"><strong>For Cursor and Grok Bot</strong> (Agent / Bot plugins). · Independent product, not affiliated with Anthropic or Cursor. · <strong>面向 Cursor 与 Grok Bot</strong>（Agent / Bot 插件）；独立产品，与 Anthropic、Cursor 无关。</p>
 
       <div class="cta-row">
-        <a class="cta" href="https://github.com/1019666077-bit/cc-helper-plugin">Get the free plugin</a>
-        <span class="cta-disabled" aria-disabled="true">Download Helper · Coming soon</span>
-        <span class="cta-ghost" aria-disabled="true">Buy Pro · Coming soon</span>
+        <a class="cta" href="https://pancake.waffo.ai/store/moying-e3keic1t/product/PROD_4rpv1XspFZwARrTFDfvlmY?type=subscription&amp;currency=USD" target="_blank" rel="noopener">Buy Pro · $29/year</a>
+        <a class="cta-ghost-link" href="mailto:moying.studio@outlook.com?subject=CC%20Helper%20download">Request the installer</a>
+        <a class="cta-ghost-link" href="https://github.com/1019666077-bit/cc-helper-plugin">Get the free plugin</a>
       </div>
-      <p class="caption">Plugin is MIT and free. Desktop installer and license checkout are not live yet — placeholders only.</p>
+      <p class="caption">The free plugin is MIT. Pro is $29/year (subscription, billed by Waffo). The desktop installer isn’t public yet — email us and we’ll send it over.</p>
+
+      <h2>What it is — and what it isn’t</h2>
+      <p class="zh-gloss">是什么、不是什么</p>
+      <p><strong>Bot Bridge CC Helper is a dispatch bridge.</strong> A remote bot — Cursor or Grok Bot — writes a task into a local inbox on your machine, the desktop Helper runs Claude Code with it, and status and progress stream back into a tray panel so you can watch, step in, or walk away. The bot drives; your PC does the work.</p>
+      <p><strong>It is not a Claude Code GUI, a Claude Code fork, or an official extension.</strong> It does not replace the Claude Code CLI or your editor extension, and it is not made by, endorsed by, or affiliated with Anthropic or Cursor. It wraps the CLI you already have: same Claude Code, driven by your bot instead of your keyboard.</p>
 
       <h2>Two layers</h2>
       <p class="zh-gloss">两层：市场薄插件 + 本机 Helper</p>
-      <p><strong>Free marketplace plugin</strong> — skills, rules, and soft hooks. It teaches the bot how to write inbox JSON, poll status, and stop a job. Soft tips only: it does <em>not</em> hard-block risky shells. Submitted for review on Cursor Marketplace (not listed yet) · 已提交审核，尚未上架. Install from Marketplace / Connect Apps when it goes live, or clone into <code>~/.cursor/plugins/local/cc-helper</code>.</p>
-      <p><strong>Desktop Helper (Windows)</strong> — tray / daemon with a progress panel. This is what actually runs and watches Claude Code in realtime. Without it, the plugin is only the playbook layer.</p>
+      <p><strong>Free marketplace plugin</strong> — skills, rules, and soft hooks. It teaches the bot the dispatch playbook: how to write inbox JSON, poll progress, and stop a job. Soft tips only: it does <em>not</em> hard-block risky shells. Submitted for review on Cursor Marketplace (not listed yet) · 已提交审核，尚未上架. Install from Marketplace / Connect Apps when it goes live, or clone into <code>~/.cursor/plugins/local/cc-helper</code>.</p>
+      <p><strong>Desktop Helper (Windows)</strong> — tray / daemon that owns the inbox and actually runs and watches Claude Code: it picks up dispatched jobs, streams progress, and enforces the Pro limits below. Without it, the plugin is only the playbook layer.</p>
 
       <h2>Free vs Pro</h2>
-      <p class="zh-gloss">Free 派活闭环 · Pro 预算硬顶、超时判死、手机通知</p>
+      <p class="zh-gloss">Free 派活闭环 · Pro 预算硬顶、超时判死、手机推送</p>
+      <p>Both tiers close the same loop: the bot dispatches into the inbox, the Helper runs Claude Code and reports progress. Pro is what makes it hands-off — the Helper hard-stops a run the moment your token/budget cap is hit, kills a job that stalls, and pushes a phone alert (Bark or webhook) when something blocks, so you can walk away instead of babysitting the terminal.</p>
       <div class="plan-table-wrap">
         <table class="plan-table">
           <thead>
@@ -65,14 +71,19 @@
           </thead>
           <tbody>
             <tr>
-              <th scope="row">Dispatch loop</th>
-              <td>Send task → poll status → stop</td>
+              <th scope="row">Dispatch from the bot</th>
+              <td>Write a job into the local inbox</td>
               <td>Same</td>
             </tr>
             <tr>
-              <th scope="row">Realtime panel</th>
-              <td>With desktop Helper</td>
-              <td>With desktop Helper</td>
+              <th scope="row">Progress watch</th>
+              <td>Tray panel + <code>progress.md</code></td>
+              <td>Same</td>
+            </tr>
+            <tr>
+              <th scope="row">Stop a running job</th>
+              <td>Yes (control <code>stop</code>)</td>
+              <td>Same</td>
             </tr>
             <tr>
               <th scope="row">Token / budget cap</th>
@@ -85,42 +96,43 @@
               <td>Kill a hung job after N minutes</td>
             </tr>
             <tr>
-              <th scope="row">Phone alerts</th>
+              <th scope="row">Phone push</th>
               <td>—</td>
               <td>Bark and/or webhook on blockers</td>
             </tr>
             <tr>
-              <th scope="row">Price (planned)</th>
+              <th scope="row">Price</th>
               <td>$0</td>
-              <td>~$49 / year or $79 lifetime</td>
+              <td>$29 / year (subscription)</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <h2>How it fits together</h2>
+      <p class="zh-gloss">派活闭环</p>
       <ol class="steps">
-        <li>Install the free plugin in Cursor or Grok Bot.</li>
-        <li>Install the Windows Helper and keep the tray running (when the download is available).</li>
-        <li>Ask the bot to dispatch with the <code>cc-helper-dispatch</code> skill.</li>
-        <li>Watch progress locally; Pro users get hard caps and Bark/webhook when something blocks.</li>
+        <li>Install the free plugin in Cursor or Grok Bot — it gives the bot the dispatch playbook.</li>
+        <li>Install the Windows Helper (request the installer by email) and keep the tray running. This is the part that actually runs Claude Code.</li>
+        <li>Ask the bot to dispatch with the <code>cc-helper-dispatch</code> skill: it writes one job JSON into <code>inbox\</code>.</li>
+        <li>Watch progress in the tray — or walk away. Pro hard-stops over-budget or stalled jobs and pushes a Bark/webhook alert when something blocks.</li>
       </ol>
 
       <div class="note">
-        <strong>Marketplace note.</strong> Cursor publisher terms require marketplace plugins to be free. We don’t sell the plugin. Paid Pro is only the local Helper license, sold on this site (coming soon via Waffo).
+        <strong>Marketplace note.</strong> Cursor publisher terms require marketplace plugins to be free. We don’t sell the plugin. Paid Pro is only the local Helper license, sold on this page via Waffo — $29/year.
       </div>
 
       <h2>Who we are</h2>
       <p class="zh-gloss">运营主体</p>
       <p><strong>Moying Studio</strong> — 东莞市常平创客汇网络技术工作室（个体工商户）, Dongguan, Guangdong, China. Contact: <a href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a>.</p>
 
-      <h2 id="terms">Terms (CC Helper)</h2>
+      <h2 id="terms">Terms (Bot Bridge CC Helper)</h2>
       <p class="zh-gloss">条款（仅本产品）</p>
-      <p>Bot Bridge / CC Helper is a product of Moying Studio (东莞市常平创客汇网络技术工作室，个体工商户). The free marketplace plugin is MIT-licensed software provided as-is. The Windows desktop Helper and any Pro license are sold separately on this site when available. Coming-soon download and purchase buttons are placeholders, not offers. You are responsible for how you use Claude Code and any API spend on your own machine. We may update these terms on this page.</p>
+      <p>Bot Bridge CC Helper is a product of Moying Studio (东莞市常平创客汇网络技术工作室，个体工商户). It is an independent tool: not made by, endorsed by, or affiliated with Anthropic (Claude, Claude Code) or Anysphere (Cursor). The free marketplace plugin is MIT-licensed software provided as-is. The Windows desktop Helper and the Pro license are sold separately on this page: Pro is a $29/year subscription processed by Waffo, and the desktop installer is delivered on request by email. You are responsible for how you use Claude Code and any API spend on your own machine. We may update these terms on this page.</p>
 
-      <h2 id="privacy">Privacy (CC Helper)</h2>
+      <h2 id="privacy">Privacy (Bot Bridge CC Helper)</h2>
       <p class="zh-gloss">隐私（仅本产品）</p>
-      <p>This page is separate from the calligraphy generator’s privacy policy. The free Cursor/Grok Bot plugin does not collect or sell your Marketplace usage data through us. The desktop Helper runs on your Windows PC: task inbox, progress, and license checks stay on your machine unless you turn on optional notify channels (Bark / webhook) that you configure yourself. We do not operate a cloud that stores your Claude Code transcripts for this product. If you email us for support, we keep that correspondence only to help you. Payments (when live) are processed by Waffo; we receive order email and license fulfillment details needed to issue a key.</p>
+      <p>This page is separate from the calligraphy generator’s privacy policy. The free Cursor/Grok Bot plugin does not collect or sell your Marketplace usage data through us. The desktop Helper runs on your Windows PC: task inbox, progress, and license checks stay on your machine unless you turn on optional notify channels (Bark / webhook) that you configure yourself. We do not operate a cloud that stores your Claude Code transcripts for this product. If you email us for support, we keep that correspondence only to help you. Payments are processed by Waffo; we receive the order email and the details needed to issue your Pro key.</p>
 
       <h2>Links</h2>
       <div class="pill-row">
