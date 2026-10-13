@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="both">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claim your Bot Bridge Rules Pro key</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <a class="brand" href="../">
+        <span class="brand-mark">B</span>
+        <div>
+          <strong>Bot Bridge</strong>
+          <p><span class="en-line">Rules · Pro key</span><span class="zh-gloss">规则 · 激活码</span></p>
+        </div>
+      </a>
+      <a href="../"><span class="en-line">← Back</span><span class="zh-gloss">返回</span></a>
+    </header>
+    <main class="article">
+      <h1><span class="en-line">Claim your Pro key</span></h1>
+      <p class="zh-gloss">领取 Pro 激活码</p>
+      <p class="lead en-line">Enter the email and order id from your Waffo receipt. You get a BBR key and a license.json for the Windows panel. Same claim API as CC Helper.</p>
+      <p class="zh-gloss">填写 Waffo 收据上的邮箱和订单号。你会拿到 BBR 激活码和给 Windows 面板用的 license.json。领码接口与 CC Helper 相同。</p>
+
+      <form id="claim-form">
+        <div class="field">
+          <label for="email"><span class="en-line">Email used at checkout</span><span class="zh-gloss">结账邮箱</span></label>
+          <input id="email" type="email" required placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label for="orderId"><span class="en-line">Order id</span><span class="zh-gloss">订单号</span></label>
+          <input id="orderId" required placeholder="ord_…" />
+          <span class="zh-gloss">订单号在付款确认信里，一般以 ord_ 开头。</span>
+        </div>
+        <button class="cta" id="submit" type="submit">
+          <span class="en-line">Get my key</span>
+          <span class="zh-gloss">领取激活码</span>
+        </button>
+      </form>
+      <div class="msg err" id="error" hidden></div>
+      <section id="result" hidden>
+        <h2><span class="en-line">Your Pro key</span></h2>
+        <p class="zh-gloss">你的 Pro 激活码</p>
+        <div class="code-box" id="code">—</div>
+        <p id="expiry"></p>
+        <div class="cta-row">
+          <button class="cta-ghost-link" id="download" type="button"><span class="en-line">Download license.json</span></button>
+          <button class="cta-ghost-link" id="copy" type="button"><span class="en-line">Copy key</span></button>
+        </div>
+        <div id="machines-wrap" hidden>
+          <h3><span class="en-line">Activated on</span><span class="zh-gloss">已绑定的机器</span></h3>
+          <ul id="machines"></ul>
+          <p class="zh-gloss">一张码最多 3 台。解绑一台才能换机。</p>
+          <p class="en-line">One key works on up to 3 machines. Unbind one to free a slot.</p>
+        </div>
+      </section>
+      <div class="note">
+        <p class="en-line"><strong>How to activate.</strong> In Bot Bridge Rules choose Upgrade Pro and paste the key. The panel registers this PC online. You can also drop the downloaded license.json next to rules.json; the panel will bind this machine the next time it is online.</p>
+        <p class="zh-gloss">在规则面板里选升级 Pro，贴上激活码。面板会联网登记这台电脑。也可以把下载的 license.json 放到 rules.json 旁边，下次联网时会自动绑定。</p>
+      </div>
+      <p>Support: <a href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a></p>
+    </main>
+  </div>
+  <script>
+    (function () {
+      var form = document.getElementById('claim-form');
+      var submit = document.getElementById('submit');
+      var errorEl = document.getElementById('error');
+      var resultEl = document.getElementById('result');
+      var codeEl = document.getElementById('code');
+      var expiryEl = document.getElementById('expiry');
+      var license = null;
+      var currentCode = null;
+      var machines = [];
+      var SUPPORT = 'moying.studio@outlook.com';
+
+      function showError(text) {
+        errorEl.textContent = text;
+        errorEl.hidden = false;
+      }
+      function renderMachines() {
+        var list = document.getElementById('machines');
+        var wrap = document.getElementById('machines-wrap');
+        list.textContent = '';
+        if (!currentCode || !machines.length) { wrap.hidden = true; return; }
+        machines.forEach(function (m) {
+          var li = document.createElement('li');
+          var name = document.createElement('code');
+          name.textContent = m.machineId;
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = 'Unbind';
+          btn.addEventListener('click', function () { unbind(m.machineId, btn); });
+          li.appendChild(name);
+          li.appendChild(btn);
+          list.appendChild(li);
+        });
+        wrap.hidden = false;
+      }
+      async function unbind(machineId, btn) {
+        btn.disabled = true;
+        try {
+          var res = await fetch('/api/pro/deactivate', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', accept: 'application/json' },
+            body: JSON.stringify({ code: currentCode, machineId: machineId }),
+          });
+          var body = await res.json().catch(function () { return {}; });
+          if (!res.ok) { showError(body.message || 'Could not unbind.'); btn.disabled = false; return; }
+          machines = Array.isArray(body.machines) ? body.machines : [];
+          renderMachines();
+        } catch (err) {
+          showError('Network error.');
+          btn.disabled = false;
+        }
+      }
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        errorEl.hidden = true;
+        resultEl.hidden = true;
+        var email = document.getElementById('email').value.trim();
+        var orderId = document.getElementById('orderId').value.trim();
+        submit.disabled = true;
+        try {
+          var res = await fetch('/api/license/claim?email=' + encodeURIComponent(email) + '&orderId=' + encodeURIComponent(orderId), { headers: { accept: 'application/json' } });
+          var body = await res.json().catch(function () { return {}; });
+          if (!res.ok) { showError(body.message || ('Could not match that receipt. Write to ' + SUPPORT + '.')); return; }
+          license = body.licenseJson || null;
+          currentCode = body.code || null;
+          machines = Array.isArray(body.machines) ? body.machines : [];
+          codeEl.textContent = body.code;
+          expiryEl.textContent = body.expiresAt ? ('Valid through ' + body.expiresAt) : 'No expiry on this license.';
+          renderMachines();
+          resultEl.hidden = false;
+        } catch (err) {
+          showError('Network error — this page claims keys from botbridge.dev.');
+        } finally {
+          submit.disabled = false;
+        }
+      });
+      document.getElementById('download').addEventListener('click', function () {
+        if (!license) return;
+        var blob = new Blob([JSON.stringify(license, null, 2) + '\n'], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'license.json'; a.click();
+        URL.revokeObjectURL(url);
+      });
+      document.getElementById('copy').addEventListener('click', function () {
+        navigator.clipboard.writeText(codeEl.textContent);
+      });
+    })();
+  </script>
+</body>
+</html>
