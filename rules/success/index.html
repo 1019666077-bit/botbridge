@@ -1,69 +1,129 @@
 <!DOCTYPE html>
-<html lang="en" data-lang="both">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Claim your Bot Bridge Rules Pro key</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Claim your Bot Bridge Rules Pro key · Bot Bridge</title>
+  <meta name="description" content="Already bought Bot Bridge Rules Pro? Enter the email and order id from your Waffo receipt to get your BBR key and license.json instantly." />
   <meta name="robots" content="noindex" />
-  <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="../../styles.css" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#f7f7f5" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .claim-form { display: grid; gap: 14px; margin: 20px 0 8px; }
+    .field { display: grid; gap: 6px; }
+    .field label { font-weight: 600; font-size: 0.92rem; }
+    .field input {
+      font: inherit; color: var(--fg); background: var(--surface);
+      border: 1px solid var(--line); border-radius: var(--radius-sm);
+      padding: 11px 13px; box-shadow: var(--shadow-sm);
+    }
+    .field input:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
+    .field .hint { color: var(--muted); font-size: 0.82rem; }
+    .claim-form button {
+      font: inherit; font-weight: 600; cursor: pointer; border: 0;
+      color: #fff; background: var(--accent); border-radius: var(--radius-sm);
+      padding: 12px 18px; box-shadow: var(--shadow-sm); justify-self: start;
+    }
+    .claim-form button:hover { background: var(--accent-hover); }
+    .claim-form button[disabled] { opacity: 0.6; cursor: progress; }
+    .result { margin-top: 22px; }
+    .result[hidden] { display: none; }
+    .code-box {
+      font-family: var(--mono); font-size: 1.25rem; letter-spacing: 0.06em;
+      background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      color: var(--fg); border-radius: var(--radius-sm); padding: 14px 16px; margin: 10px 0;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+    }
+    .result .meta { color: var(--muted); font-size: 0.92rem; }
+    .result .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .msg { border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 18px; }
+    .msg.err { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .msg[hidden] { display: none; }
+    .machines { margin-top: 18px; }
+    .machines[hidden] { display: none; }
+    .machines h3 { margin: 0 0 8px; font-size: 1rem; }
+    .machines ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .machines li {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius-sm); padding: 9px 12px;
+    }
+    .machines code { font-family: var(--mono); font-size: 0.86rem; word-break: break-all; }
+    .machines button {
+      font: inherit; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
+      color: #991b1b; background: #fff; border: 1px solid #fecaca;
+      border-radius: var(--radius-sm); padding: 6px 12px;
+    }
+    .machines button[disabled] { opacity: 0.6; cursor: progress; }
+  </style>
 </head>
 <body>
   <div class="app">
     <header class="top">
-      <a class="brand" href="../">
-        <span class="brand-mark">B</span>
+      <a class="brand" href="/rules/">
+        <span class="brand-mark" aria-hidden="true">B</span>
         <div>
-          <strong>Bot Bridge</strong>
-          <p><span class="en-line">Rules · Pro key</span><span class="zh-gloss">规则 · 激活码</span></p>
+          <span class="brand-name">Bot Bridge</span>
+          <p>Rules · Pro key</p>
         </div>
       </a>
-      <a href="../"><span class="en-line">← Back</span><span class="zh-gloss">返回</span></a>
+      <a class="ghost" href="/rules/">← Back to Rules</a>
     </header>
-    <main class="article">
-      <h1><span class="en-line">Claim your Pro key</span></h1>
-      <p class="zh-gloss">领取 Pro 激活码</p>
-      <p class="lead en-line">Enter the email and order id from your Waffo receipt. You get a BBR key and a license.json for the Windows panel. Same claim API as CC Helper.</p>
-      <p class="zh-gloss">填写 Waffo 收据上的邮箱和订单号。你会拿到 BBR 激活码和给 Windows 面板用的 license.json。领码接口与 CC Helper 相同。</p>
 
-      <form id="claim-form">
+    <main class="article">
+      <p class="zh-gloss">中文说明：付款后凭收据邮箱 + 订单号，自助领取 BBR 激活码</p>
+      <h1>Claim your Pro key</h1>
+      <p class="zh-gloss">领取 Pro 激活码</p>
+      <p class="lead">Enter the email and order id from your Waffo receipt. You get a BBR key and a <code>license.json</code> for the Windows panel. Same claim API as CC Helper.</p>
+      <p class="zh-gloss">填写 Waffo 收据上的邮箱和订单号。你会拿到 BBR 激活码和给 Windows 面板用的 license.json。</p>
+
+      <form class="claim-form" id="claim-form">
         <div class="field">
-          <label for="email"><span class="en-line">Email used at checkout</span><span class="zh-gloss">结账邮箱</span></label>
-          <input id="email" type="email" required placeholder="you@example.com" />
+          <label for="email">Email used at checkout · 结账邮箱</label>
+          <input id="email" type="email" required placeholder="you@example.com" autocomplete="email" />
         </div>
         <div class="field">
-          <label for="orderId"><span class="en-line">Order id</span><span class="zh-gloss">订单号</span></label>
-          <input id="orderId" required placeholder="ord_…" />
-          <span class="zh-gloss">订单号在付款确认信里，一般以 ord_ 开头。</span>
+          <label for="orderId">Order id · 订单号</label>
+          <input id="orderId" required placeholder="ord_…" autocomplete="off" />
+          <span class="hint">Usually starts with <code>ord_</code> in the payment confirmation email.</span>
         </div>
-        <button class="cta" id="submit" type="submit">
-          <span class="en-line">Get my key</span>
-          <span class="zh-gloss">领取激活码</span>
-        </button>
+        <button id="submit" type="submit">Get my key · 领取激活码</button>
       </form>
+
       <div class="msg err" id="error" hidden></div>
-      <section id="result" hidden>
-        <h2><span class="en-line">Your Pro key</span></h2>
+
+      <section class="result" id="result" hidden>
+        <h2>Your Pro key</h2>
         <p class="zh-gloss">你的 Pro 激活码</p>
         <div class="code-box" id="code">—</div>
-        <p id="expiry"></p>
-        <div class="cta-row">
-          <button class="cta-ghost-link" id="download" type="button"><span class="en-line">Download license.json</span></button>
-          <button class="cta-ghost-link" id="copy" type="button"><span class="en-line">Copy key</span></button>
+        <p class="meta" id="expiry"></p>
+        <div class="actions">
+          <button class="cta-ghost-link" id="download" type="button">Download license.json</button>
+          <button class="cta-ghost-link" id="copy" type="button">Copy key</button>
         </div>
-        <div id="machines-wrap" hidden>
-          <h3><span class="en-line">Activated on</span><span class="zh-gloss">已绑定的机器</span></h3>
+        <div class="machines" id="machines-wrap" hidden>
+          <h3>Activated on · 已绑定的机器</h3>
           <ul id="machines"></ul>
-          <p class="zh-gloss">一张码最多 3 台。解绑一台才能换机。</p>
-          <p class="en-line">One key works on up to 3 machines. Unbind one to free a slot.</p>
+          <p class="caption">One key works on up to 3 machines. Unbind one to free a slot. · 一张码最多 3 台。</p>
         </div>
       </section>
-      <div class="note">
-        <p class="en-line"><strong>How to activate.</strong> In Bot Bridge Rules choose Upgrade Pro and paste the key. The panel registers this PC online. You can also drop the downloaded license.json next to rules.json; the panel will bind this machine the next time it is online.</p>
-        <p class="zh-gloss">在规则面板里选升级 Pro，贴上激活码。面板会联网登记这台电脑。也可以把下载的 license.json 放到 rules.json 旁边，下次联网时会自动绑定。</p>
+
+      <div class="note" style="margin-top:28px">
+        <strong>How to activate.</strong> In Bot Bridge Rules choose Upgrade Pro and paste the key. The panel registers this PC online. You can also drop the downloaded <code>license.json</code> next to <code>rules.json</code>; the panel will bind this machine the next time it is online.
+        <p class="zh-gloss" style="margin:8px 0 0">在规则面板里选升级 Pro，贴上激活码。也可以把 license.json 放到 rules.json 旁边。</p>
       </div>
-      <p>Support: <a href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a></p>
+      <p class="caption">Support: <a href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a></p>
     </main>
+
+    <footer class="legal">
+      <a href="/">Bot Bridge</a>
+      <a href="/rules/">Rules</a>
+      <a href="/rules/#terms">Terms</a>
+    </footer>
   </div>
   <script>
     (function () {
