@@ -1,147 +1,135 @@
 <!DOCTYPE html>
-<html lang="en" data-lang="both">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Bot Bridge Rules · Standing rules for Grok Bot and CC Helper</title>
   <meta name="description" content="A Windows panel for short standing rules. Free reminds. Pro ($29/year, Waffo) hard-blocks and syncs rules.json to 3 machines. Handbooks stay local markdown." />
-  <link rel="canonical" href="https://botbridge.dev/rules" />
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-  <!-- Standalone stub. On botbridge.dev you can point this at /styles.css instead. -->
-  <link rel="stylesheet" href="../styles.css" />
+  <link rel="canonical" href="https://botbridge.dev/rules/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#f7f7f5" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Bot Bridge" />
+  <meta property="og:url" content="https://botbridge.dev/rules/" />
+  <meta property="og:title" content="Bot Bridge Rules · Standing rules for bots on your PC" />
+  <meta property="og:description" content="Windows rules panel. Free reminds; Pro $29/yr hard-block + sync up to 3 PCs. Handbooks stay local markdown." />
+  <meta property="og:image" content="https://botbridge.dev/favicon.svg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Bot Bridge Rules" />
+  <meta name="twitter:description" content="Standing rules panel for Grok Bot and CC Helper. Free reminds; Pro $29/yr hard-block." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
   <div class="app">
     <header class="top">
-      <a class="brand" href="https://botbridge.dev/">
-        <span class="brand-mark">B</span>
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">B</span>
         <div>
-          <strong>Bot Bridge</strong>
-          <p><span class="en-line">Rules</span><span class="zh-gloss">规则面板</span></p>
+          <span class="brand-name">Bot Bridge</span>
+          <p>Rules</p>
         </div>
       </a>
-      <div class="lang" role="group" aria-label="Language">
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
-        <button type="button" data-lang="zh" aria-pressed="false">中文</button>
-        <button type="button" data-lang="both" aria-pressed="true">Both</button>
-      </div>
+      <a class="ghost" href="mailto:moying.studio@outlook.com?subject=Bot%20Bridge%20Rules%20installer">Request installer →</a>
     </header>
 
     <main class="article">
-      <p class="zh-gloss">中文说明在英文下面。默认两种语言都显示。</p>
-      <h1><span class="en-line">Standing rules for the bots on your PC.</span></h1>
-      <p class="zh-gloss">本机机器人要遵守的短规则。</p>
-      <p class="lead en-line">Bot Bridge Rules is a Windows panel. You keep a local <code>rules.json</code>. Grok Bot and CC Helper read it before they act. It is not a workflow runner.</p>
+      <p class="zh-gloss">中文说明：本机短规则面板 · 免费提醒 / Pro $29/年硬拦 · 最多 3 台同步</p>
+      <h1>Standing rules for the bots on your PC.</h1>
+      <p class="zh-gloss brand-line">本机机器人要遵守的短规则。</p>
+      <p class="lead">Bot Bridge Rules is a Windows panel. You keep a local <code>rules.json</code>. Grok Bot and CC Helper read it before they act. It is not a workflow runner.</p>
       <p class="zh-gloss">Bot Bridge Rules 是 Windows 规则面板。你维护本机 <code>rules.json</code>，Grok Bot 和 CC Helper 每次动作前读取。不是工作流跑器。</p>
 
+      <p class="audience"><strong>For Cursor and Grok Bot</strong>. · Independent product, not affiliated with xAI, Anthropic, or Cursor. · <strong>面向 Cursor 与 Grok Bot</strong>；独立产品，与 xAI、Anthropic、Cursor 无关。</p>
+
       <div class="cta-row">
-        <a class="cta" id="buy" href="#checkout">
-          <span class="en-line">Buy Pro · $29/year</span>
-          <span class="zh-gloss">购买 Pro · $29/年</span>
-        </a>
-        <a class="cta-ghost-link" href="./success/">
-          <span class="en-line">Already bought? Claim your key</span>
-          <span class="zh-gloss">已购买？领取激活码</span>
-        </a>
-        <a class="cta-ghost-link" href="mailto:moying.studio@outlook.com?subject=Bot%20Bridge%20Rules%20installer">
-          <span class="en-line">Request the installer</span>
-          <span class="zh-gloss">索取安装包</span>
-        </a>
+        <a class="cta" href="https://pancake.waffo.ai/store/moying-e3keic1t/product/PROD_5qCcU0xjnJGxadJbWNXk0h?type=subscription&amp;currency=USD" target="_blank" rel="noopener">Buy Pro · $29/year</a>
+        <a class="cta-ghost-link" href="/rules/success/">Already bought? Claim your key</a>
+        <a class="cta-ghost-link" href="mailto:moying.studio@outlook.com?subject=Bot%20Bridge%20Rules%20installer">Request the installer</a>
       </div>
+      <p class="caption">Free panel reminds within limits. Pro is <strong>$29/year</strong> via Waffo Pancake (same chain as CC Helper Pro). Pay, then claim your BBR key with receipt email + order id. Installer arrives by email on request.</p>
       <p class="zh-gloss">付款走 Waffo Pancake，和 CC Helper Pro 同一条链路。激活码前缀 BBR。</p>
 
-      <h2><span class="en-line">Free and Pro</span></h2>
+      <h2>Free and Pro</h2>
       <p class="zh-gloss">免费版与 Pro</p>
-      <table class="plan">
-        <thead>
-          <tr>
-            <th></th>
-            <th><span class="en-line">Free</span><span class="zh-gloss">免费版</span></th>
-            <th>Pro · $29/year</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th><span class="en-line">Rules</span><span class="zh-gloss">条数</span></th>
-            <td><span class="en-line">20</span></td>
-            <td><span class="en-line">Unlimited</span><span class="zh-gloss">不限</span></td>
-          </tr>
-          <tr>
-            <th><span class="en-line">On a hit</span><span class="zh-gloss">命中时</span></th>
-            <td><span class="en-line">Remind only</span><span class="zh-gloss">只提醒</span></td>
-            <td><span class="en-line">Hard block</span><span class="zh-gloss">硬拦</span></td>
-          </tr>
-          <tr>
-            <th><span class="en-line">Machines</span><span class="zh-gloss">机器</span></th>
-            <td>1</td>
-            <td><span class="en-line">Up to 3, sync rules.json</span><span class="zh-gloss">最多 3 台，同步 rules.json</span></td>
-          </tr>
-          <tr>
-            <th><span class="en-line">Handbooks</span><span class="zh-gloss">手册</span></th>
-            <td colspan="2"><span class="en-line">Local markdown under workflows/. Not synced, not billed.</span><span class="zh-gloss">workflows/ 里的本地 markdown。不同步，不另收费。</span></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="plan-table-wrap">
+        <table class="plan-table">
+          <thead>
+            <tr><th></th><th>Free</th><th>Pro <span style="font-weight:500;opacity:.8">$29/yr</span></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Rules</th>
+              <td>20</td>
+              <td>Unlimited · 不限</td>
+            </tr>
+            <tr>
+              <th scope="row">On a hit · 命中时</th>
+              <td>Remind only · 只提醒</td>
+              <td>Hard block · 硬拦</td>
+            </tr>
+            <tr>
+              <th scope="row">Machines · 机器</th>
+              <td>1</td>
+              <td>Up to 3, sync <code>rules.json</code> · 最多 3 台</td>
+            </tr>
+            <tr>
+              <th scope="row">Handbooks · 手册</th>
+              <td colspan="2">Local markdown under <code>workflows/</code>. Not synced, not billed. · 本地 markdown，不同步、不另收费</td>
+            </tr>
+            <tr>
+              <th scope="row">Price</th>
+              <td>$0</td>
+              <td>$29 / year</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <h2 id="checkout"><span class="en-line">Checkout</span></h2>
+      <h2 id="checkout">Checkout</h2>
       <p class="zh-gloss">结账</p>
-      <p class="en-line">Pro uses the same Waffo Pancake checkout as CC Helper Pro, on store <code>moying-e3keic1t</code>. This page is the product URL the app opens. No Stripe, Lemon, or Paddle.</p>
-      <p class="zh-gloss">Pro 使用和 CC Helper Pro 相同的 Waffo Pancake 结账，店铺 <code>moying-e3keic1t</code>。面板里的升级按钮打开的就是这一页。不用 Stripe、Lemon、Paddle。</p>
-      
-      <h2><span class="en-line">Where the files live</span></h2>
+      <p>Pro uses the same Waffo Pancake checkout as CC Helper Pro, on store <code>moying-e3keic1t</code>. The Buy Pro button opens that checkout. No Stripe, Lemon, or Paddle.</p>
+      <p class="zh-gloss">Pro 使用和 CC Helper Pro 相同的 Waffo Pancake 结账。购买按钮打开的就是那一页。不用 Stripe、Lemon、Paddle。</p>
+
+      <h2>Where the files live</h2>
       <p class="zh-gloss">文件在哪</p>
       <pre>Documents\BotBridge\
   rules.json
   license.json
   workflows\
     x-post.md</pre>
-      <p class="en-line">The panel edits rules only. You edit a handbook in Notepad. A bot opens a markdown file only when a rule names it.</p>
+      <p>The panel edits rules only. You edit a handbook in Notepad. A bot opens a markdown file only when a rule names it.</p>
       <p class="zh-gloss">面板只改规则。手册用记事本改。机器人只在规则点了名时才打开那一个 markdown。</p>
 
-      <h2><span class="en-line">Who we are</span></h2>
+      <h2>Who we are</h2>
       <p class="zh-gloss">运营主体</p>
-      <p><strong>Moying Studio</strong> — 东莞市常平创客汇网络技术工作室（个体工商户）, Dongguan, Guangdong, China. <a href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a>.</p>
+      <p><strong>Moying Studio</strong> — 东莞市常平创客汇网络技术工作室（个体工商户）, Dongguan, Guangdong, China. Contact: <a href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a>.</p>
 
-      <h2 id="terms"><span class="en-line">Terms</span></h2>
-      <p class="zh-gloss">条款</p>
-      <p class="en-line">Bot Bridge Rules is a product of Moying Studio. It is independent of xAI, Anthropic, and Cursor. The Windows app is free to use within the Free limits. Pro is a $29/year subscription processed by Waffo. Your key is claimed on the success page with the receipt email and order id. You are responsible for what your bots do with the rules you write.</p>
+      <h2 id="terms">Terms (Bot Bridge Rules)</h2>
+      <p class="zh-gloss">条款（仅本产品）</p>
+      <p>Bot Bridge Rules is a product of Moying Studio. It is independent of xAI, Anthropic, and Cursor. The Windows app is free to use within the Free limits. Pro is a $29/year subscription processed by Waffo. Your key is claimed on the <a href="/rules/success/">success page</a> with the receipt email and order id. You are responsible for what your bots do with the rules you write.</p>
       <p class="zh-gloss">Bot Bridge Rules 由 Moying Studio 提供，与 xAI、Anthropic、Cursor 无关。Windows 应用在免费额度内可直接使用。Pro 为每年 $29 的订阅，由 Waffo 收款。用收据邮箱和订单号在领码页领取激活码。机器人如何执行你写的规则，由你负责。</p>
 
-      <h2 id="privacy"><span class="en-line">Privacy</span></h2>
-      <p class="zh-gloss">隐私</p>
-      <p class="en-line">Rules and handbooks stay on your PC. The app contacts botbridge.dev only to activate, re-check, or unbind a Pro key (code, anonymous machine id, optional machine name). Payments are handled by Waffo. We do not upload workflows/.</p>
+      <h2 id="privacy">Privacy (Bot Bridge Rules)</h2>
+      <p class="zh-gloss">隐私（仅本产品）</p>
+      <p>Rules and handbooks stay on your PC. The app contacts botbridge.dev only to activate, re-check, or unbind a Pro key (code, anonymous machine id, optional machine name). Payments are handled by Waffo. We do not upload <code>workflows/</code>.</p>
       <p class="zh-gloss">规则和手册留在你的电脑上。应用只在激活、复验或解绑 Pro 时联系 botbridge.dev（激活码、匿名机器号、可选机器名）。付款由 Waffo 处理。我们不上传 workflows/。</p>
+
+      <h2>Links</h2>
+      <div class="pill-row">
+        <a class="pill" href="/">All Bot Bridge products</a>
+        <a class="pill" href="/rules/success/">Claim Pro key</a>
+        <a class="pill" href="mailto:moying.studio@outlook.com">moying.studio@outlook.com</a>
+      </div>
     </main>
+
     <footer class="legal">
-      <a href="https://botbridge.dev/">Bot Bridge</a>
-      <a href="#terms"><span class="en-line">Terms</span><span class="zh-gloss">条款</span></a>
-      <a href="#privacy"><span class="en-line">Privacy</span><span class="zh-gloss">隐私</span></a>
+      <a href="/">Bot Bridge</a>
+      <a href="#terms">Terms</a>
+      <a href="#privacy">Privacy</a>
     </footer>
   </div>
-  <script>
-    var WAFFO_CHECKOUT_URL = 'https://pancake.waffo.ai/store/moying-e3keic1t/product/PROD_5qCcU0xjnJGxadJbWNXk0h?type=subscription&currency=USD';
-    var buy = document.getElementById('buy');
-    if (WAFFO_CHECKOUT_URL) {
-      buy.href = WAFFO_CHECKOUT_URL;
-      buy.target = '_blank';
-      buy.rel = 'noopener';
-    }
-    var key = 'botbridge-rules-lang';
-    function apply(lang) {
-      if (lang !== 'en' && lang !== 'zh' && lang !== 'both') lang = 'both';
-      document.documentElement.dataset.lang = lang;
-      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-      document.querySelectorAll('.lang button').forEach(function (btn) {
-        btn.setAttribute('aria-pressed', btn.getAttribute('data-lang') === lang ? 'true' : 'false');
-      });
-      try { localStorage.setItem(key, lang); } catch (e) {}
-    }
-    var saved = 'both';
-    try { saved = localStorage.getItem(key) || 'both'; } catch (e) {}
-    apply(saved);
-    document.querySelectorAll('.lang button').forEach(function (btn) {
-      btn.addEventListener('click', function () { apply(btn.getAttribute('data-lang')); });
-    });
-  </script>
 </body>
 </html>
