@@ -17,11 +17,23 @@ test('rules landing states the RFP panel, workflow, and prices in English', () =
   assert.match(page, /early bird/i);
   assert.match(page, /list price/i);
   assert.doesNotMatch(page, /\$29/);
-  assert.match(page, /https:\/\/github\.com\/1019666077-bit\/botbridge-rules\/releases/);
   assert.match(page, /PROD_5qCcU0xjnJGxadJbWNXk0h/);
   assert.match(page, /id="demo"/);
   assert.match(page, /Demo video/);
   assert.match(page, /not published yet/i);
+});
+
+test('rules download CTAs use public botbridge.dev files', () => {
+  const exe = 'https://botbridge.dev/downloads/rules/BotBridgeRules-Setup-1.0.1.exe';
+  const zip = 'https://botbridge.dev/downloads/rules/BotBridgeRules-1.0.1-win-x64.zip';
+  assert.ok(page.includes(`class="ghost" href="${exe}"`));
+  assert.ok(page.includes(`class="cta" href="${exe}"`));
+  assert.ok(page.includes(`class="pill" href="${exe}"`));
+  assert.ok(page.includes(`class="pill" href="${zip}"`));
+  assert.doesNotMatch(page, /github\.com\/1019666077-bit\/botbridge-rules\/releases/);
+  assert.match(page, /Unsigned build/);
+  assert.match(page, /SmartScreen/);
+  assert.match(page, /More info → Run anyway/);
 });
 
 test('homepage Rules card uses the early-bird price and drops $29', () => {
