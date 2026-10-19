@@ -19,17 +19,18 @@ test('rules landing states the RFP panel, workflow, and prices in English', () =
   assert.doesNotMatch(page, /\$29/);
   assert.match(page, /PROD_5qCcU0xjnJGxadJbWNXk0h/);
   assert.match(page, /id="demo"/);
-  assert.match(page, /<video[^>]*class="demo-video"/);
-  assert.match(page, /src="\/rules\/demo\.mp4"/);
+  assert.match(page, /<video[^>]*class="demo-video"[^>]*\bcontrols\b/);
+  assert.match(page, /src="\/media\/rules-demo\.mp4"/);
   assert.match(page, /type="video\/mp4"/);
   assert.doesNotMatch(page, /not published yet/i);
   assert.doesNotMatch(page, /Placeholder/);
+  assert.doesNotMatch(page, /\/rules\/demo\.mp4/);
 });
 
-test('rules demo file is a playable mp4', () => {
-  const file = new URL('../rules/demo.mp4', import.meta.url);
+test('rules demo file is a playable mp4 under the Workers asset limit', () => {
+  const file = new URL('../media/rules-demo.mp4', import.meta.url);
   const st = statSync(file);
-  assert.ok(st.size > 100_000 && st.size < 8_000_000);
+  assert.ok(st.size > 100_000 && st.size <= 25 * 1024 * 1024);
   const head = readFileSync(file).subarray(4, 8).toString('ascii');
   assert.equal(head, 'ftyp');
 });
