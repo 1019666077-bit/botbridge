@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import test from 'node:test';
 
 const page = readFileSync(new URL('../rules/index.html', import.meta.url), 'utf8');
@@ -19,8 +19,19 @@ test('rules landing states the RFP panel, workflow, and prices in English', () =
   assert.doesNotMatch(page, /\$29/);
   assert.match(page, /PROD_5qCcU0xjnJGxadJbWNXk0h/);
   assert.match(page, /id="demo"/);
-  assert.match(page, /Demo video/);
-  assert.match(page, /not published yet/i);
+  assert.match(page, /<video[^>]*class="demo-video"/);
+  assert.match(page, /src="\/rules\/demo\.mp4"/);
+  assert.match(page, /type="video\/mp4"/);
+  assert.doesNotMatch(page, /not published yet/i);
+  assert.doesNotMatch(page, /Placeholder/);
+});
+
+test('rules demo file is a playable mp4', () => {
+  const file = new URL('../rules/demo.mp4', import.meta.url);
+  const st = statSync(file);
+  assert.ok(st.size > 100_000 && st.size < 8_000_000);
+  const head = readFileSync(file).subarray(4, 8).toString('ascii');
+  assert.equal(head, 'ftyp');
 });
 
 test('rules download CTAs use the public dist release', () => {
