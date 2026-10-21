@@ -132,16 +132,61 @@ function clientIp(request) {
   );
 }
 
-// Light per-identity throttle. KV is eventually consistent, so this is a speed
-// bump, not a hard guarantee — good enough for a low-traffic self-serve flow.
-async function allowKey(env, bucket, identity, limit, windowSeconds) {
-  if (!env.LICENSES) return true;
+// Light per-identity throttle. This is a speed bump, not a hard guarantee.
+//
+// Counters deliberately do NOT live in KV: every claim/validate/poll wrote one
+// `rl:*` key there, which burned KV writes on the hot path without making the
+// limit any stricter (KV is eventually consistent). The edge Cache API is the
+// primary store; an in-memory Map covers runtimes without caches.default.
+const rlMemory = new Map();
+
+async function allowKey(_env, bucket, identity, limit, windowSeconds) {
   const window = Math.floor(Date.now() / 1000 / windowSeconds);
   const key = `rl:${bucket}:${identity}:${window}`;
-  const current = parseInt((await env.LICENSES.get(key)) || '0', 10) || 0;
-  if (current >= limit) return false;
-  await env.LICENSES.put(key, String(current + 1), { expirationTtl: Math.max(60, windowSeconds * 2) });
+  const ttlMs = Math.max(60, windowSeconds * 2) * 1000;
+
+  if (typeof caches !== 'undefined' && caches.default) {
+    try {
+      const cache = caches.default;
+      const cacheKey = new Request(`https://botbridge-rl.internal/${encodeURIComponent(key)}`);
+      const hit = await cache.match(cacheKey);
+      let current = 0;
+      if (hit) current = parseInt(await hit.text(), 10) || 0;
+      if (current >= limit) return false;
+      await cache.put(
+        cacheKey,
+        new Response(String(current + 1), {
+          headers: {
+            'Cache-Control': `max-age=${Math.max(60, windowSeconds * 2)}`,
+            'Content-Type': 'text/plain',
+          },
+        }),
+      );
+      return true;
+    } catch {
+      // Cache API unavailable or unhappy — fall through to the process-local Map.
+    }
+  }
+
+  const now = Date.now();
+  let entry = rlMemory.get(key);
+  if (!entry || now > entry.exp) {
+    entry = { n: 0, exp: now + ttlMs };
+  }
+  if (entry.n >= limit) return false;
+  entry.n += 1;
+  rlMemory.set(key, entry);
+  if (rlMemory.size > 4000) {
+    for (const [k, v] of rlMemory) {
+      if (now > v.exp) rlMemory.delete(k);
+    }
+  }
   return true;
+}
+
+/** Test hook: clear process-local counters between test cases. */
+export function __resetRateLimitsForTests() {
+  rlMemory.clear();
 }
 
 async function allowRequest(env, request, bucket, limit, windowSeconds) {

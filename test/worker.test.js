@@ -469,6 +469,10 @@ test('claim throttles repeated guesses against the same order id', async () => {
     }
   }
   assert.equal(limited, true, 'guessing emails against one order id must be throttled');
+  assert.ok(
+    ![...env.LICENSES.map.keys()].some((key) => key.startsWith('rl:')),
+    'rate-limit counters must not write to KV',
+  );
 });
 
 test('concurrent activations never exceed the machine cap or drop a bound machine', async () => {

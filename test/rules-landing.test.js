@@ -1,38 +1,61 @@
 import assert from 'node:assert/strict';
-import { readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const page = readFileSync(new URL('../rules/index.html', import.meta.url), 'utf8');
 const home = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 
-test('rules landing states the RFP panel, workflow, and prices in English', () => {
-  assert.match(page, /standing rules panel for RFP and proposal experts/i);
-  assert.match(page, /Sample → Rules/);
-  assert.match(page, /Execute drafts/);
-  assert.match(page, /Check = gaps only/);
-  assert.match(page, /The panel does not edit Word/);
-  assert.match(page, /reusable across bids/i);
-  assert.match(page, /\$79\/year/);
-  assert.match(page, /\$149\/year/);
-  assert.match(page, /early bird/i);
-  assert.match(page, /list price/i);
+test('rules landing is an APA 7 thesis page, not RFP positioning', () => {
+  assert.match(page, /Write your thesis or dissertation with AI, and it still passes APA 7 layout checks\./);
+  assert.match(page, /The panel only stores and manages your rules\./);
+  assert.match(page, /Execute/);
+  assert.match(page, /Check/);
+  assert.match(page, /never receive your <code>\.docx<\/code>/);
+  assert.match(page, /add, edit, and delete rules/i);
+  assert.match(page, /school's or advisor's house style/i);
+  assert.match(page, /8 layout checks failed/);
+  assert.match(page, /0 gaps after/i);
+  assert.doesNotMatch(page, /RFP/i);
+  assert.doesNotMatch(page, /proposal/i);
   assert.doesNotMatch(page, /\$29/);
-  assert.match(page, /PROD_5qCcU0xjnJGxadJbWNXk0h/);
-  assert.match(page, /id="demo"/);
-  assert.match(page, /<video[^>]*class="demo-video"[^>]*\bcontrols\b/);
-  assert.match(page, /src="\/media\/rules-demo\.mp4"/);
-  assert.match(page, /type="video\/mp4"/);
-  assert.doesNotMatch(page, /not published yet/i);
-  assert.doesNotMatch(page, /Placeholder/);
-  assert.doesNotMatch(page, /\/rules\/demo\.mp4/);
 });
 
-test('rules demo file is a playable mp4 under the Workers asset limit', () => {
-  const file = new URL('../media/rules-demo.mp4', import.meta.url);
-  const st = statSync(file);
-  assert.ok(st.size > 100_000 && st.size <= 25 * 1024 * 1024);
-  const head = readFileSync(file).subarray(4, 8).toString('ascii');
-  assert.equal(head, 'ftyp');
+test('before/after table covers the eight APA 7 layout check categories', () => {
+  for (const category of [
+    'Margins',
+    'Font',
+    'Double spacing',
+    'Running head',
+    'Heading levels',
+    'Title page',
+    'References hanging indent',
+    'First-line indent',
+  ]) {
+    assert.ok(page.includes(category), `table should mention ${category}`);
+  }
+  assert.equal((page.match(/<td>✗<\/td>/g) || []).length, 8, 'eight fails before');
+  assert.equal((page.match(/<td>✓<\/td>/g) || []).length, 8, 'eight passes after');
+});
+
+test('rules demo embeds the YouTube video responsively and links to youtu.be', () => {
+  assert.match(page, /id="demo"/);
+  assert.match(page, /<div class="demo-embed">/);
+  assert.match(page, /<iframe[\s\S]*src="https:\/\/www\.youtube\.com\/embed\/eC34tcHyzcY"/);
+  assert.match(page, /allowfullscreen/);
+  assert.match(page, /https:\/\/youtu\.be\/eC34tcHyzcY/);
+  assert.doesNotMatch(page, /<video/);
+  assert.doesNotMatch(page, /rules-demo\.mp4/);
+});
+
+test('rules page metadata and social cards point at the APA 7 landing', () => {
+  assert.match(page, /<title>Bot Bridge Rules: APA 7 thesis formatting rules for AI writing<\/title>/);
+  assert.match(page, /<link rel="canonical" href="https:\/\/botbridge\.dev\/rules\/" \/>/);
+  assert.match(page, /<meta property="og:type" content="website" \/>/);
+  assert.match(page, /<meta property="og:url" content="https:\/\/botbridge\.dev\/rules\/" \/>/);
+  assert.match(page, /<meta property="og:title" content="Bot Bridge Rules: APA 7 thesis formatting rules for AI writing" \/>/);
+  assert.match(page, /<meta property="og:image" content="https:\/\/i\.ytimg\.com\/vi\/eC34tcHyzcY\/hqdefault\.jpg" \/>/);
+  assert.match(page, /<meta name="twitter:card" content="summary_large_image" \/>/);
+  assert.match(page, /<meta name="description" content="[^"]*APA 7[^"]*"/);
 });
 
 test('rules download CTAs use the public dist release', () => {
@@ -49,12 +72,25 @@ test('rules download CTAs use the public dist release', () => {
   assert.match(page, /More info → Run anyway/);
 });
 
-test('homepage Rules card uses the early-bird price and drops $29', () => {
+test('pricing keeps the early-bird Waffo checkout and the claim flow', () => {
+  assert.match(page, /\$79\/year/);
+  assert.match(page, /\$149\/year/);
+  assert.match(page, /early bird/i);
+  assert.match(page, /list price/i);
+  const checkout =
+    'https://pancake.waffo.ai/store/moying-e3keic1t/product/PROD_5qCcU0xjnJGxadJbWNXk0h?type=subscription&amp;currency=USD';
+  assert.ok(page.includes(checkout), 'checkout link is escaped and unchanged');
+  assert.match(page, /href="\/rules\/success\/"/);
+  assert.match(page, /One key binds up to 3 machines/);
+});
+
+test('homepage Rules card describes the APA 7 product and drops RFP', () => {
   const start = home.indexOf('Bot Bridge Rules');
   const end = home.indexOf('Webcam Bridge');
   assert.ok(start > 0 && end > start);
   const card = home.slice(start, end);
-  assert.match(card, /RFP and proposal experts/);
+  assert.match(card, /APA 7/);
   assert.match(card, /\$79\/year/);
+  assert.doesNotMatch(card, /RFP/i);
   assert.doesNotMatch(card, /\$29/);
 });

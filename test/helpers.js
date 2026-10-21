@@ -3,7 +3,7 @@
 
 import assert from 'node:assert/strict';
 import { generateKeyPairSync, createSign } from 'node:crypto';
-import { handleWebhook, handleActivate } from '../worker.js';
+import { handleWebhook, handleActivate, __resetRateLimitsForTests } from '../worker.js';
 
 export const PROD = 'PROD_4rpv1XspFZwARrTFDfvlmY';
 export const OTHER_PROD = 'PROD_somethingelse';
@@ -34,6 +34,9 @@ export class FakeKV {
 }
 
 export function makeEnv(overrides = {}) {
+  // Rate-limit counters are process-local now (no KV writes). Reset them so
+  // one test's deliberate hammering cannot throttle the next test.
+  __resetRateLimitsForTests();
   return {
     LICENSES: new FakeKV(),
     WAFFO_WEBHOOK_PUBLIC_KEY: publicKey,
