@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>App Bridge · Local Windows UI for Cursor | Moying</title>
-  <meta name="description" content="Free Cursor thin plugin: list Windows windows, read on-screen UI text, screenshot via local Windows-MCP. Click/type are Pro placeholders. MIT. Not listed yet. Does not promise WeChat control." />
+  <title>App Bridge · List windows, read UI text, screenshot</title>
+  <meta name="description" content="Free MIT plugin plus a local Windows-MCP server. List open windows, read on-screen UI text, and take a screenshot. Click and type are not in Free. Does not promise WeChat control." />
   <link rel="canonical" href="https://botbridge.dev/app-bridge" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <meta name="theme-color" content="#f7f7f5" />
+  <meta name="theme-color" content="#f4f3ef" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Bot Bridge" />
   <meta property="og:url" content="https://botbridge.dev/app-bridge" />
@@ -26,22 +26,26 @@
   <div class="app">
     <header class="top">
       <a class="brand" href="/">
-        <span class="brand-mark" aria-hidden="true">B</span>
-        <div>
-          <span class="brand-name">Bot Bridge</span>
-          <p>App Bridge</p>
-        </div>
+        <img class="brand-logo" src="/brand/publisher.svg" alt="" width="32" height="32" />
+        <span class="brand-name">Bot Bridge</span>
       </a>
-      <a class="ghost" href="https://github.com/1019666077-bit/app-bridge-plugin">GitHub →</a>
+      <nav class="nav" aria-label="Products">
+        <a href="/cc-helper/">CC Helper</a>
+        <a href="/rules/">Rules</a>
+        <a href="/webcam/">Webcam</a>
+        <a href="/obsidian/">Obsidian</a>
+        <a href="/app-bridge/" aria-current="page">App</a>
+        <a class="ghost" href="https://github.com/1019666077-bit/app-bridge-plugin">GitHub</a>
+      </nav>
     </header>
 
     <main class="article">
-      <h1>App Bridge</h1>
-      <p class="zh-gloss brand-line" lang="zh-Hans">Bot Bridge · 让 Agent 更好地用上你的本机能力</p>
-      <p class="lead">Let Cursor see what’s on your Windows desktop — list open windows, read on-screen UI text, and take a screenshot — through a free plugin and a local MCP server. No always-on tray exe in the free layer.</p>
-      <p class="zh-gloss" lang="zh-Hans">免费插件 + 本机 MCP：列出窗口、读界面文字、截图。点击和输入还没做，Pro 按钮只是占位。</p>
+      <p class="eyebrow">App Bridge · Free · MIT · Windows</p>
+      <h1>List windows, read the UI text, take a screenshot.</h1>
+      <p class="lead">A free plugin plus a local fork of Windows-MCP. On your Windows PC the agent can list open windows, read on-screen UI text, and take a screenshot. Click, type, and scroll are not in this free layer.</p>
+      <p class="zh-gloss" lang="zh-Hans">免费插件加本机 Windows-MCP。在 Windows 上可以列出窗口、读界面文字、截图。点击、输入、滚动不在免费层里。</p>
 
-      <p class="audience"><strong>For Cursor and Grok Bot</strong> (Agent / Bot plugins). · <strong>面向 Cursor 与 Grok Bot</strong>（Agent / Bot 插件）。</p>
+      <p class="meta-line"><span>For Cursor and Grok Bot</span><span>No always-on tray</span><span>Not listed on Marketplace yet</span></p>
 
       <div class="note">
         <strong>Status.</strong> Product page staking — <em>not listed</em> on Cursor Marketplace yet · <strong>尚未上架</strong>. Free layer is <strong>MIT</strong>.
@@ -57,6 +61,22 @@
       <div class="note">
         <strong>WeChat / 微信.</strong> It may show up in the window list like any other app. That is an optional example only — <strong>we do not promise reliable WeChat control or automation</strong> · 不承诺能控微信。
       </div>
+
+      <h2>What Free can do</h2>
+      <ul class="feature-grid">
+        <li class="feature">
+          <h3>List open windows</h3>
+          <p>Ask in chat, or run <code>/list-windows</code>. A window may show up by name, including apps you happen to have open.</p>
+        </li>
+        <li class="feature">
+          <h3>Read UI text</h3>
+          <p>Snapshot reads the on-screen UI text and tree for a window, so the agent can see labels without you pasting them.</p>
+        </li>
+        <li class="feature">
+          <h3>Screenshot</h3>
+          <p>Take a screenshot of the desktop UI through the local server. Click, type, scroll, shortcuts, and app launch are Pro placeholders — not implemented in Free.</p>
+        </li>
+      </ul>
 
       <h2>Free vs Pro</h2>
       <p class="zh-gloss" lang="zh-Hans">Free：列出窗口、读界面文字、截图。点击、输入还没做。</p>
