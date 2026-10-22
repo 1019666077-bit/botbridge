@@ -86,6 +86,21 @@ function htmlResponse(body, status = 200) {
   });
 }
 
+// Static HTML from ASSETS is often `text/html` with no charset. Combined with
+// `X-Content-Type-Options: nosniff`, some clients then misread UTF-8 Chinese.
+// Only the fallback response is rewritten; license handlers already set charset.
+function withHtmlCharset(response) {
+  const contentType = response.headers.get('content-type') || '';
+  if (!/^text\/html\b/i.test(contentType) || /charset\s*=/i.test(contentType)) return response;
+  const headers = new Headers(response.headers);
+  headers.set('content-type', 'text/html; charset=utf-8');
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 /** Buyer-facing error: a stable code, a human sentence and how to get help. */
 function apiError(status, error, message) {
   return json({ error, message, support: SUPPORT_EMAIL }, status);
@@ -980,6 +995,6 @@ export default {
       logEvent({ event: 'license.api', outcome: 'server_error', path: pathname, error: err && err.message ? err.message : String(err) });
       return json({ error: 'server_error' }, 500);
     }
-    return env.ASSETS.fetch(request);
+    return withHtmlCharset(await env.ASSETS.fetch(request));
   },
 };

@@ -295,6 +295,43 @@ test('router: wrong method on the webhook is 405, unknown paths fall through to 
   assert.equal(await page.text(), 'asset');
 });
 
+test('static HTML from ASSETS gets charset=utf-8 when the asset header omits it', async () => {
+  const html = '<!DOCTYPE html><meta charset="UTF-8"><p>让</p>';
+  const env = makeEnv({
+    ASSETS: {
+      fetch: async () => new Response(html, { status: 200, headers: { 'content-type': 'text/html' } }),
+    },
+  });
+  const res = await worker.fetch(new Request('https://botbridge.dev/rules/'), env);
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get('content-type'), 'text/html; charset=utf-8');
+  assert.equal(await res.text(), html);
+});
+
+test('charset is not doubled, and non-HTML assets keep their content type', async () => {
+  const htmlEnv = makeEnv({
+    ASSETS: {
+      fetch: async () =>
+        new Response('<p>ok</p>', {
+          status: 200,
+          headers: { 'content-type': 'text/html; charset=UTF-8', 'cache-control': 'public' },
+        }),
+    },
+  });
+  const html = await worker.fetch(new Request('https://botbridge.dev/'), htmlEnv);
+  assert.equal(html.headers.get('content-type'), 'text/html; charset=UTF-8');
+  assert.equal(html.headers.get('cache-control'), 'public');
+
+  const cssEnv = makeEnv({
+    ASSETS: {
+      fetch: async () => new Response('body{}', { status: 200, headers: { 'content-type': 'text/css' } }),
+    },
+  });
+  const css = await worker.fetch(new Request('https://botbridge.dev/styles.css'), cssEnv);
+  assert.equal(css.headers.get('content-type'), 'text/css');
+  assert.equal(await css.text(), 'body{}');
+});
+
 test('router: /api/pro/activate dispatches on POST and rejects GET', async () => {
   const env = makeEnv();
   const code = await seedLicense(env);
