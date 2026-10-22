@@ -2,7 +2,7 @@
   --bg: #f7f7f5;
   --surface: #ffffff;
   --fg: #111113;
-  --muted: #6b6b76;
+  --muted: #56565f;
   --line: #e8e8e4;
   --soft: #f0f0ec;
   --accent: #4f46e5;
@@ -15,7 +15,8 @@
   --radius-sm: 10px;
   --max: 680px;
   --max-wide: 920px;
-  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-zh: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei", var(--font);
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
@@ -29,7 +30,8 @@ html, body {
   color: var(--fg);
   font-family: var(--font);
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.65;
+  overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -45,6 +47,7 @@ code {
   border-radius: 6px;
   padding: 0.12em 0.4em;
   color: var(--fg);
+  overflow-wrap: anywhere;
 }
 
 .app {
@@ -64,7 +67,8 @@ code {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 10px 16px;
   margin: 0 -28px;
   padding: 14px 28px;
   background: color-mix(in srgb, var(--bg) 82%, transparent);
@@ -90,6 +94,7 @@ code {
   text-decoration: none;
   color: inherit;
   min-width: 0;
+  flex: 1 1 auto;
 }
 .brand:hover { color: inherit; opacity: 1; }
 .brand-mark {
@@ -135,6 +140,8 @@ code {
   text-decoration: none;
   font-family: inherit;
   box-shadow: var(--shadow-sm);
+  max-width: 100%;
+  white-space: nowrap;
   transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .ghost:hover {
@@ -172,11 +179,12 @@ code {
   box-shadow: 0 0 0 3px var(--accent-ring);
 }
 .hero h1 {
-  margin: 0 0 22px;
+  margin: 0 0 18px;
   font-size: clamp(40px, 6vw, 52px);
-  line-height: 1.05;
+  line-height: 1.08;
   letter-spacing: -0.04em;
   font-weight: 700;
+  text-wrap: balance;
 }
 .lede {
   margin: 0 0 14px;
@@ -198,7 +206,7 @@ code {
   padding: 4px 0 64px;
 }
 .products h2 {
-  margin: 0 0 18px;
+  margin: 0 0 8px;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -210,9 +218,10 @@ code {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
   gap: 14px;
 }
+.product-grid > li { min-width: 0; }
 .product-card {
   display: flex;
   flex-direction: column;
@@ -245,14 +254,16 @@ code {
   gap: 12px;
 }
 .product-icon {
-  width: 36px;
+  min-width: 36px;
   height: 36px;
+  padding: 0 8px;
   border-radius: 10px;
   display: grid;
   place-items: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  white-space: nowrap;
   background: var(--soft);
   color: var(--fg);
   border: 1px solid var(--line);
@@ -316,14 +327,15 @@ code {
   max-width: var(--max);
 }
 .article h1 {
-  margin: 0 0 18px;
+  margin: 0 0 14px;
   font-size: clamp(30px, 4.5vw, 38px);
-  line-height: 1.12;
+  line-height: 1.2;
   letter-spacing: -0.03em;
   font-weight: 700;
+  text-wrap: balance;
 }
 .article h2 {
-  margin: 48px 0 14px;
+  margin: 36px 0 12px;
   font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -342,9 +354,9 @@ code {
   letter-spacing: -0.01em;
 }
 .zh-gloss {
-  margin: 0 0 10px;
-  font-size: 13px;
-  line-height: 1.55;
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.75;
   color: var(--muted);
 }
 .caption {
@@ -354,15 +366,16 @@ code {
   line-height: 1.5 !important;
 }
 
-.audience {
-  margin: 0 0 28px;
-  padding: 13px 16px;
-  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+.audience,
+.scenario {
+  margin: 0 0 22px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--accent-soft);
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: #3730a3;
+  background: var(--surface);
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #3f3f46;
 }
 
 .cta-row {
@@ -433,6 +446,7 @@ code {
   color: var(--fg) !important;
 }
 
+.note .zh-gloss { margin: 10px 0 0; }
 .note {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -500,13 +514,15 @@ code {
   font-weight: 600;
   color: var(--fg);
   font-size: 12px;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
+  white-space: normal;
 }
 .plan-table tbody th {
   font-weight: 600;
-  white-space: nowrap;
+  white-space: normal;
   width: 34%;
+  min-width: 7.5rem;
   color: var(--fg);
 }
 .plan-table tr:last-child th,
@@ -564,8 +580,7 @@ code {
   .top { margin: 0 -18px; padding: 12px 18px; }
   .top::after { left: 18px; right: 18px; }
   .hero { padding: 52px 0 40px; }
-  .product-grid { grid-template-columns: 1fr; }
-  .cta-row { flex-direction: column; }
+  .cta-row { flex-direction: column; align-items: stretch; }
   .cta, .cta-disabled, .cta-ghost, .cta-ghost-link { width: 100%; }
 }
 
@@ -581,22 +596,48 @@ code {
 /* Brand positioning */
 .lede.lead-zh,
 .lead-zh {
-  font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+  font-size: clamp(1.3rem, 2.4vw, 1.6rem);
   font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.35;
+  letter-spacing: 0;
+  line-height: 1.5;
   color: var(--fg);
-  margin: 0 0 12px;
-  max-width: 28ch;
+  margin: 0 0 14px;
+  max-width: 22em;
+  text-wrap: balance;
 }
 .lede.zh.lead-zh { color: var(--fg); opacity: 1; }
 .section-note {
-  margin: -8px 0 20px;
+  margin: 0 0 18px;
   color: var(--muted);
   font-size: 0.95rem;
+  line-height: 1.6;
 }
 .brand-line {
-  margin-top: -4px !important;
+  margin-top: 0 !important;
   margin-bottom: 14px !important;
   color: var(--muted);
+}
+.zh,
+.zh-gloss,
+.lead-zh,
+.foot-legal,
+:lang(zh-Hans) {
+  font-family: var(--font-zh);
+  letter-spacing: 0;
+  line-break: strict;
+}
+.aside {
+  font-weight: 500;
+  color: var(--muted);
+}
+.cta .aside {
+  color: inherit;
+  opacity: 0.9;
+}
+.foot-legal {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+  padding-top: 2px;
 }

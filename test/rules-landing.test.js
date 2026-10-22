@@ -5,36 +5,28 @@ import test from 'node:test';
 const page = readFileSync(new URL('../rules/index.html', import.meta.url), 'utf8');
 const home = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 
-test('rules landing is an APA 7 thesis page, not RFP positioning', () => {
-  assert.match(page, /Write your thesis or dissertation with AI, and it still passes APA 7 layout checks\./);
+test('rules landing is a standing-rules panel, not a Word-only or RFP pitch', () => {
+  assert.match(page, /The panel adds, edits, and deletes standing rules\./);
   assert.match(page, /The panel only stores and manages your rules\./);
+  assert.match(page, /Check only lists gaps/);
+  assert.match(page, /does not open Word/);
+  assert.match(page, /does not accept a <code>\.docx<\/code>/);
   assert.match(page, /Execute/);
   assert.match(page, /Check/);
   assert.match(page, /never receive your <code>\.docx<\/code>/);
   assert.match(page, /add, edit, and delete rules/i);
   assert.match(page, /school's or advisor's house style/i);
-  assert.match(page, /8 layout checks failed/);
-  assert.match(page, /0 gaps after/i);
+  assert.match(page, /CC Helper/);
+  assert.match(page, /Webcam/);
+  assert.match(page, /APA 7/);
+  assert.match(page, /\$79\/year/);
+  assert.match(page, /\$149\/year/);
+  assert.doesNotMatch(page, /8 layout checks failed/);
+  assert.doesNotMatch(page, /0 gaps after/i);
+  assert.doesNotMatch(page, /<td>✗<\/td>/);
   assert.doesNotMatch(page, /RFP/i);
   assert.doesNotMatch(page, /proposal/i);
   assert.doesNotMatch(page, /\$29/);
-});
-
-test('before/after table covers the eight APA 7 layout check categories', () => {
-  for (const category of [
-    'Margins',
-    'Font',
-    'Double spacing',
-    'Running head',
-    'Heading levels',
-    'Title page',
-    'References hanging indent',
-    'First-line indent',
-  ]) {
-    assert.ok(page.includes(category), `table should mention ${category}`);
-  }
-  assert.equal((page.match(/<td>✗<\/td>/g) || []).length, 8, 'eight fails before');
-  assert.equal((page.match(/<td>✓<\/td>/g) || []).length, 8, 'eight passes after');
 });
 
 test('rules demo embeds the YouTube video responsively and links to youtu.be', () => {
@@ -48,11 +40,11 @@ test('rules demo embeds the YouTube video responsively and links to youtu.be', (
 });
 
 test('rules page metadata and social cards point at the APA 7 landing', () => {
-  assert.match(page, /<title>Bot Bridge Rules: APA 7 thesis formatting rules for AI writing<\/title>/);
+  assert.match(page, /<title>Bot Bridge Rules · Standing rules for your own AI<\/title>/);
   assert.match(page, /<link rel="canonical" href="https:\/\/botbridge\.dev\/rules\/" \/>/);
   assert.match(page, /<meta property="og:type" content="website" \/>/);
   assert.match(page, /<meta property="og:url" content="https:\/\/botbridge\.dev\/rules\/" \/>/);
-  assert.match(page, /<meta property="og:title" content="Bot Bridge Rules: APA 7 thesis formatting rules for AI writing" \/>/);
+  assert.match(page, /<meta property="og:title" content="Bot Bridge Rules · Standing rules for your own AI" \/>/);
   assert.match(page, /<meta property="og:image" content="https:\/\/i\.ytimg\.com\/vi\/eC34tcHyzcY\/hqdefault\.jpg" \/>/);
   assert.match(page, /<meta name="twitter:card" content="summary_large_image" \/>/);
   assert.match(page, /<meta name="description" content="[^"]*APA 7[^"]*"/);
@@ -84,13 +76,19 @@ test('pricing keeps the early-bird Waffo checkout and the claim flow', () => {
   assert.match(page, /One key binds up to 3 machines/);
 });
 
-test('homepage Rules card describes the APA 7 product and drops RFP', () => {
+test('homepage Rules card is one plugin, not a Word editor, and drops RFP', () => {
   const start = home.indexOf('Bot Bridge Rules');
   const end = home.indexOf('Webcam Bridge');
   assert.ok(start > 0 && end > start);
   const card = home.slice(start, end);
   assert.match(card, /APA 7/);
   assert.match(card, /\$79\/year/);
+  assert.match(card, /does not open Word/);
+  assert.match(card, /lists gaps/i);
   assert.doesNotMatch(card, /RFP/i);
   assert.doesNotMatch(card, /\$29/);
+  assert.match(home, /CC Helper/);
+  assert.match(home, /Obsidian Bridge/);
+  assert.match(home, /App Bridge/);
+  assert.match(home, /个体工商户/);
 });
