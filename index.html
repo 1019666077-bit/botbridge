@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Bot Bridge · 让 Agent 更好地用上你的本机能力</title>
-  <meta name="description" content="Bot Bridge — Help your Agent use your local capabilities better. Free plugins + local helpers/MCP for camera, notes, desktop UI, standing rules, and more." />
+  <title>Bot Bridge · Local tools for your agent</title>
+  <meta name="description" content="Bot Bridge gives an agent local capabilities: dispatch Claude Code, keep standing rules, snap one webcam frame, read an Obsidian vault, and inspect the Windows desktop." />
   <link rel="canonical" href="https://botbridge.dev/" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <meta name="theme-color" content="#f7f7f5" />
+  <meta name="theme-color" content="#f4f3ef" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Bot Bridge" />
   <meta property="og:url" content="https://botbridge.dev/" />
-  <meta property="og:title" content="Bot Bridge · Help your Agent use your local capabilities better" />
-  <meta property="og:description" content="Give Agents local capabilities — camera, vault, desktop UI, Claude Code, standing rules, and more to come." />
+  <meta property="og:title" content="Bot Bridge · Local tools for your agent" />
+  <meta property="og:description" content="Dispatch Claude Code, keep standing rules, snap a webcam frame, read an Obsidian vault, or inspect the Windows desktop." />
   <meta property="og:image" content="https://botbridge.dev/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,34 +23,43 @@
   <div class="app">
     <header class="top">
       <a class="brand" href="/">
-        <span class="brand-mark" aria-hidden="true">B</span>
+        <img class="brand-logo" src="/brand/publisher.svg" alt="" width="32" height="32" />
         <span class="brand-name">Bot Bridge</span>
       </a>
-      <nav class="nav">
+      <nav class="nav" aria-label="Products">
+        <a href="/cc-helper/">CC Helper</a>
+        <a href="/rules/">Rules</a>
+        <a href="/webcam/">Webcam</a>
+        <a href="/obsidian/">Obsidian</a>
+        <a href="/app-bridge/">App</a>
         <a class="ghost" href="mailto:moying.studio@outlook.com">Contact</a>
       </nav>
     </header>
 
     <main class="hero">
-      <p class="eyebrow">Moying Studio · for Cursor &amp; Grok Bot</p>
+      <p class="eyebrow">Moying Studio · Cursor &amp; Grok Bot</p>
       <h1>Bot Bridge</h1>
-      <p class="lede zh lead-zh" lang="zh-Hans">让 Agent 更好地用上你的本机能力</p>
-      <p class="lede">Help your Agent use your local capabilities better — free marketplace plugins plus local helpers/MCP. Camera, vault, desktop UI, Claude Code, standing rules today; more bridges coming.</p>
+      <p class="lede">Local tools an agent can use on this machine: dispatch Claude Code, keep standing rules, snap one webcam frame, read an Obsidian vault, or inspect the Windows desktop.</p>
+      <p class="zh-gloss" lang="zh-Hans">本机工具，让 Agent 用上这台电脑：派活给 Claude Code、维护常驻规则、拍一帧摄像头、读 Obsidian 笔记、查看 Windows 桌面。</p>
     </main>
 
     <section class="products">
-      <h2>Bridges</h2>
-      <p class="section-note">Start with these. The platform grows beyond five.</p>
+      <div class="section-head">
+        <h2>Products</h2>
+        <p class="section-note">Two desktop apps are paid. The other three are free plugins plus a local MCP server.</p>
+      </div>
       <ul class="product-grid">
         <li>
           <a class="product-card" href="/cc-helper/">
             <div class="card-top">
-              <span class="product-icon" aria-hidden="true">CC</span>
-              <span class="product-arrow" aria-hidden="true">→</span>
+              <img class="product-mark" src="/brand/cc-helper.svg" alt="" width="40" height="40" />
             </div>
             <div>
-              <strong>CC Helper</strong>
-              <span>Dispatch Claude Code on your Windows PC with realtime local control.</span>
+              <div class="card-title-row">
+                <strong>CC Helper</strong>
+                <span class="chip">Pro · $29/year</span>
+              </div>
+              <p class="summary">Dispatch a job to Claude Code on your Windows PC and read structured results back in chat. Pro approves pay and submit blockers from your phone, and can push a screenshot through Bark.</p>
             </div>
           </a>
         </li>
@@ -58,47 +67,55 @@
           <a class="product-card" href="/rules/">
             <div class="card-top">
               <span class="product-icon" aria-hidden="true">Ru</span>
-              <span class="product-arrow" aria-hidden="true">→</span>
             </div>
             <div>
-              <strong>Bot Bridge Rules</strong>
-              <span>Local rules panel: add, edit, or delete rules. Check only lists gaps; your AI does the editing, including an APA 7 thesis layout. The panel does not open Word. Early bird $79/year.</span>
+              <div class="card-title-row">
+                <strong>Bot Bridge Rules</strong>
+                <span class="chip">Early bird · $79/year</span>
+              </div>
+              <p class="summary">Add, edit, and delete standing rules detailed enough for a layout check to pass, including an APA 7 thesis preset. Your assistant, Claude Code, or a script reads the panel and does the editing.</p>
             </div>
           </a>
         </li>
         <li>
           <a class="product-card" href="/webcam/">
             <div class="card-top">
-              <span class="product-icon" aria-hidden="true">Cam</span>
-              <span class="product-arrow" aria-hidden="true">→</span>
+              <img class="product-mark" src="/brand/webcam.svg" alt="" width="40" height="40" />
             </div>
             <div>
-              <strong>Webcam Bridge</strong>
-              <span>One on-demand JPEG into the chat, then release the camera.</span>
+              <div class="card-title-row">
+                <strong>Webcam Bridge</strong>
+                <span class="chip chip-quiet">Free</span>
+              </div>
+              <p class="summary">Ask for one photo. A local MCP server opens the camera, returns a single JPEG into the chat, and releases the device.</p>
             </div>
           </a>
         </li>
         <li>
           <a class="product-card" href="/obsidian/">
             <div class="card-top">
-              <span class="product-icon" aria-hidden="true">Ob</span>
-              <span class="product-arrow" aria-hidden="true">→</span>
+              <img class="product-mark" src="/brand/obsidian.svg" alt="" width="40" height="40" />
             </div>
             <div>
-              <strong>Obsidian Bridge</strong>
-              <span>Read vault notes, append work logs, search locally.</span>
+              <div class="card-title-row">
+                <strong>Obsidian Bridge</strong>
+                <span class="chip chip-quiet">Free</span>
+              </div>
+              <p class="summary">Point it at a vault path. The agent can read a note, append a work log, and search — on your disk, through a local MCP server.</p>
             </div>
           </a>
         </li>
         <li>
           <a class="product-card" href="/app-bridge/">
             <div class="card-top">
-              <span class="product-icon" aria-hidden="true">App</span>
-              <span class="product-arrow" aria-hidden="true">→</span>
+              <img class="product-mark" src="/brand/app-bridge.svg" alt="" width="40" height="40" />
             </div>
             <div>
-              <strong>App Bridge</strong>
-              <span>List windows, read UI text, screenshot on Windows.</span>
+              <div class="card-title-row">
+                <strong>App Bridge</strong>
+                <span class="chip chip-quiet">Free</span>
+              </div>
+              <p class="summary">On Windows, list open windows, read the on-screen UI text, and take a screenshot through a local MCP server.</p>
             </div>
           </a>
         </li>

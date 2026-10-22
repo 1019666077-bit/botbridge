@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Obsidian Bridge · Local vault for Cursor | Moying</title>
-  <meta name="description" content="Free Cursor thin plugin for a local Obsidian vault: read notes, append work logs, and search via obsidian-mcp. MIT. Not listed on Marketplace yet. Configure your vault path." />
+  <title>Obsidian Bridge · Read notes, append a work log, search locally</title>
+  <meta name="description" content="Free MIT plugin plus a local MCP server. Read Obsidian vault notes, append a work log, and search. You set the vault path. Notes stay on your machine. Not listed on Marketplace yet." />
   <link rel="canonical" href="https://botbridge.dev/obsidian" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <meta name="theme-color" content="#f7f7f5" />
+  <meta name="theme-color" content="#f4f3ef" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Bot Bridge" />
   <meta property="og:url" content="https://botbridge.dev/obsidian" />
@@ -26,22 +26,26 @@
   <div class="app">
     <header class="top">
       <a class="brand" href="/">
-        <span class="brand-mark" aria-hidden="true">B</span>
-        <div>
-          <span class="brand-name">Bot Bridge</span>
-          <p>Obsidian</p>
-        </div>
+        <img class="brand-logo" src="/brand/publisher.svg" alt="" width="32" height="32" />
+        <span class="brand-name">Bot Bridge</span>
       </a>
-      <a class="ghost" href="https://github.com/1019666077-bit/obsidian-bridge-plugin">GitHub →</a>
+      <nav class="nav" aria-label="Products">
+        <a href="/cc-helper/">CC Helper</a>
+        <a href="/rules/">Rules</a>
+        <a href="/webcam/">Webcam</a>
+        <a href="/obsidian/" aria-current="page">Obsidian</a>
+        <a href="/app-bridge/">App</a>
+        <a class="ghost" href="https://github.com/1019666077-bit/obsidian-bridge-plugin">GitHub</a>
+      </nav>
     </header>
 
     <main class="article">
-      <h1>Obsidian Bridge</h1>
-      <p class="zh-gloss brand-line" lang="zh-Hans">Bot Bridge · 让 Agent 更好地用上你的本机能力</p>
-      <p class="lead">Let Cursor read your local Obsidian vault, append work logs, and search notes — through a free thin plugin and a local MCP server. Your vault stays on your machine.</p>
-      <p class="zh-gloss" lang="zh-Hans">免费插件 + 本机 MCP：读 vault、写工作日志、搜索笔记。笔记留在本机。</p>
+      <p class="eyebrow">Obsidian Bridge · Free · MIT</p>
+      <h1>Read a note, append a work log, search the vault.</h1>
+      <p class="lead">A free plugin plus a local MCP server. Point it at your Obsidian vault folder. The agent can read a note, append a work log, and search. The files stay on your machine.</p>
+      <p class="zh-gloss" lang="zh-Hans">免费插件加本机 MCP。指向你的 Obsidian vault 文件夹后，Agent 可以读笔记、追加工作日志、搜索。文件留在本机。</p>
 
-      <p class="audience"><strong>For Cursor and Grok Bot</strong> (Agent / Bot plugins). · <strong>面向 Cursor 与 Grok Bot</strong>（Agent / Bot 插件）。</p>
+      <p class="meta-line"><span>For Cursor and Grok Bot</span><span>Vault path required</span><span>Not listed on Marketplace yet</span></p>
 
       <div class="note">
         <strong>Status.</strong> Submitted / staking the product page — <em>not listed</em> on Cursor Marketplace yet · <strong>已提交占坑，尚未上架</strong>. Free layer is MIT.
@@ -52,6 +56,22 @@
         <span class="cta-disabled" aria-disabled="true">Pro · Coming soon</span>
       </div>
       <p class="caption">You must configure your local vault path before the MCP can see notes. Pro features are placeholders only.</p>
+
+      <h2>What you can ask for</h2>
+      <ul class="feature-grid">
+        <li class="feature">
+          <h3>Read a vault note</h3>
+          <p>The local MCP reads markdown from the folder you configured. A wrong path fails until you fix it. There is no cloud vault through us.</p>
+        </li>
+        <li class="feature">
+          <h3>Append a work log</h3>
+          <p>Ask the agent to add an entry to a work log in the vault. The write happens on disk.</p>
+        </li>
+        <li class="feature">
+          <h3>Search notes</h3>
+          <p>Search stays local. The free plugin is MIT. Extra Pro tools are not for sale — the Pro button is a placeholder.</p>
+        </li>
+      </ul>
 
       <h2>Free vs Pro</h2>
       <p class="zh-gloss" lang="zh-Hans">Free：读笔记、写工作日志、搜索。Pro 还没卖，按钮只是占位。</p>

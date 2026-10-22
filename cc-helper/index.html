@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Bot Bridge CC Helper · Let your AI bot drive local Claude Code — approve from your phone</title>
-  <meta name="description" content="Built for bots that dispatch work to Claude Code on your Windows PC and get structured results back. Works with DeepSeek and other API keys (unlike Anthropic Remote Control). Free dispatch; Pro $29/yr early-bird: phone approve, screenshots, budget caps, 3 parallel." />
+  <title>Bot Bridge CC Helper · Dispatch Claude Code, approve blockers from your phone</title>
+  <meta name="description" content="Dispatch work to Claude Code on your Windows PC and get structured results back. Pro is $29/year: approve pay and submit blockers from your phone, Bark screenshot push, hard budget caps, up to 3 parallel jobs. Your own API keys, including DeepSeek." />
   <link rel="canonical" href="https://botbridge.dev/cc-helper" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <meta name="theme-color" content="#f7f7f5" />
+  <meta name="theme-color" content="#f4f3ef" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Bot Bridge" />
   <meta property="og:url" content="https://botbridge.dev/cc-helper" />
-  <meta property="og:title" content="Bot Bridge CC Helper · bot drives local Claude Code, approve from your phone" />
-  <meta property="og:description" content="Dispatch from Cursor or Grok Bot to Claude Code on your PC. DeepSeek/API keys on Windows. Free dispatch; Pro $29/yr early-bird: one-tap phone approve, screenshots, budget caps, 3 parallel." />
+  <meta property="og:title" content="Bot Bridge CC Helper · Dispatch Claude Code, approve from your phone" />
+  <meta property="og:description" content="Bot dispatches a job to Claude Code on your Windows PC. Pro $29/year: phone approve for pay and submit blockers, Bark screenshot push, budget caps, up to 3 parallel jobs." />
   <meta property="og:image" content="https://botbridge.dev/favicon.svg" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Bot Bridge CC Helper" />
-  <meta name="twitter:description" content="Let your AI bot drive local Claude Code — approve from your phone. Free dispatch; Pro $29/yr early-bird." />
+  <meta name="twitter:description" content="Dispatch local Claude Code from your bot. Pro $29/year: phone approve, Bark screenshot push, budget caps." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -26,22 +26,26 @@
   <div class="app">
     <header class="top">
       <a class="brand" href="/">
-        <span class="brand-mark" aria-hidden="true">B</span>
-        <div>
-          <span class="brand-name">Bot Bridge</span>
-          <p>CC Helper</p>
-        </div>
+        <img class="brand-logo" src="/brand/publisher.svg" alt="" width="32" height="32" />
+        <span class="brand-name">Bot Bridge</span>
       </a>
-      <a class="ghost" href="https://github.com/1019666077-bit/cc-helper-plugin">Free plugin →</a>
+      <nav class="nav" aria-label="Products">
+        <a href="/cc-helper/" aria-current="page">CC Helper</a>
+        <a href="/rules/">Rules</a>
+        <a href="/webcam/">Webcam</a>
+        <a href="/obsidian/">Obsidian</a>
+        <a href="/app-bridge/">App</a>
+        <a class="ghost" href="https://github.com/1019666077-bit/cc-helper-plugin">Free plugin</a>
+      </nav>
     </header>
 
     <main class="article">
-      <h1>Let your AI bot drive local Claude Code — approve from your phone.</h1>
-      <p class="zh-gloss brand-line" lang="zh-Hans">让远程 AI bot 驱动本机 Claude Code，在手机上批准或取消</p>
-      <p class="lead">Built for bots (Cursor, Grok Bot, and friends) that dispatch real work to Claude Code on your Windows PC and get structured results back into the chat. The Helper runs locally with your own API keys — including DeepSeek — so you are not locked into Anthropic’s Remote Control, which needs their account and does not cover Windows the same way.</p>
-      <p class="zh-gloss" lang="zh-Hans">为「bot 派活 → 本机 Claude Code 执行 → 结构化结果回 bot」设计。本机可用 DeepSeek 等 API Key；不像 Anthropic Remote Control 那样绑官方账号、也不好用在 Windows 上。</p>
+      <p class="eyebrow">CC Helper · Windows</p>
+      <h1>Dispatch Claude Code on your PC. Approve blockers from your phone.</h1>
+      <p class="lead">A bot writes a job into a local inbox. The Windows Helper runs the Claude Code CLI you already have — with your own API key, including DeepSeek — and returns structured results to the chat. When a step is blocked on a payment or a submit, Pro lets you approve or cancel it from your phone, with an optional screenshot pushed through Bark.</p>
+      <p class="zh-gloss" lang="zh-Hans">Bot 把任务写进本机 inbox，Windows Helper 用你自己的 API Key（包括 DeepSeek）跑 Claude Code，再把结构化结果回到对话。遇到付款或提交拦截时，Pro 可以在手机上批准或取消，并可通过 Bark 推送截图。</p>
 
-      <p class="audience"><strong>For Cursor and Grok Bot</strong> (Agent / Bot plugins). · Independent product, not affiliated with Anthropic or Cursor. · <strong>面向 Cursor 与 Grok Bot</strong>；独立产品，与 Anthropic、Cursor 无关。</p>
+      <p class="meta-line"><span>For Cursor and Grok Bot</span><span>Free dispatch plugin + Windows Helper</span><span>Independent of Anthropic and Cursor</span></p>
 
       <div class="cta-row">
         <a class="cta" href="https://pancake.waffo.ai/store/moying-e3keic1t/product/PROD_4rpv1XspFZwARrTFDfvlmY?type=subscription&amp;currency=USD" target="_blank" rel="noopener">Buy Pro · $29/year <span class="aside">(early-bird)</span></a>
@@ -51,17 +55,37 @@
       </div>
       <p class="caption">The free plugin is MIT. Pro is <strong>$29/year early-bird</strong> (subscription via Waffo). Pay, then claim your key instantly with receipt email + order id. Desktop installer still arrives by email on request.</p>
 
-      <h2>What it is — and what it isn’t</h2>
-      <p><strong>A dispatch bridge for bots → local Claude Code.</strong> Your bot writes a job into a local inbox; the Windows Helper runs Claude Code, streams progress, and can return structured results to the bot. With Pro you can approve or cancel paywalls / submit steps from your phone in one tap — with an optional screenshot — instead of babysitting the PC.</p>
-      <p><strong>Not a Claude Code GUI, fork, or official extension.</strong> Not Anthropic Remote Control. Not affiliated with Anthropic or Cursor. Same Claude Code CLI you already run, driven by your bot and your keys (DeepSeek, Anthropic, or others your setup supports).</p>
+      <h2>What it does</h2>
+      <ul class="feature-grid">
+        <li class="feature">
+          <h3>Dispatch into a local inbox</h3>
+          <p>The free plugin teaches the bot how to write one job, poll progress, and stop a run. The Helper owns <code>inbox\</code>, runs Claude Code, and shows progress in the tray panel. Free is one task at a time.</p>
+        </li>
+        <li class="feature">
+          <h3>Approve or cancel a blocker from your phone</h3>
+          <p>Pro opens a one-tap page when a pay or submit step is waiting. Continue approves that task once; Cancel stops it. The link lasts 24 hours and is single-use. Free leaves you at the PC to continue.</p>
+        </li>
+        <li class="feature">
+          <h3>Bark screenshot push</h3>
+          <p>Alerts go through Bark, or a webhook you configure. Free is a text push. Pro can include a screenshot of the step that is waiting.</p>
+        </li>
+        <li class="feature">
+          <h3>Budget caps, stall stop, parallel jobs</h3>
+          <p>Pro enforces a hard token budget, stops a run that stalls, and runs up to 3 jobs in parallel with auto-retry. Free keeps soft guidance only. One Pro code covers up to 2 machines.</p>
+        </li>
+      </ul>
+
+      <div class="note">
+        <strong>Same Claude Code CLI, your keys.</strong> This is not a Claude Code GUI, fork, or official extension, and it is not Anthropic Remote Control. Remote Control needs an Anthropic account and does not cover Windows the same way. CC Helper is not affiliated with Anthropic or Cursor.
+      </div>
 
       <h2>Two layers</h2>
       <p class="zh-gloss" lang="zh-Hans">两层：市场里的免费插件，加上本机 Helper。</p>
-      <p><strong>Free marketplace plugin</strong> — skills and soft hooks that teach the bot how to dispatch, poll progress, and stop a job. Soft tips only (no hard shell block in the plugin itself). Cursor Marketplace: submitted, not listed yet.</p>
-      <p><strong>Desktop Helper (Windows)</strong> — tray / daemon that owns the inbox, runs Claude Code, shows the panel, pushes text alerts, and enforces Free vs Pro limits. Without it, the plugin is only the playbook.</p>
+      <p><strong>Free marketplace plugin</strong> — skills and soft hooks that teach the bot how to dispatch, poll progress, and stop a job. Soft tips only (no hard shell block in the plugin itself). Cursor Marketplace: submitted, not listed yet. The plugin does not include the tray, Bark or webhook notify, or budget caps.</p>
+      <p><strong>Desktop Helper (Windows)</strong> — tray / daemon that owns the inbox, runs Claude Code, shows the panel, sends Bark or webhook alerts, and enforces Free vs Pro limits. Without it, the plugin is only the playbook.</p>
 
       <h2>Free vs Pro</h2>
-      <p class="zh-gloss" lang="zh-Hans">Free 可以派活。Pro 是 $29/年早鸟：手机批准、截图、预算硬顶、最多 3 路并行。这是 CC Helper 的价格，不是 Rules。</p>
+      <p class="zh-gloss" lang="zh-Hans">Free 可以派活。Pro 是 $29/年早鸟：手机批准拦截、Bark 截图推送、预算硬顶、最多 3 路并行。这是 CC Helper 的价格，不是 Rules。</p>
       <div class="plan-table-wrap">
         <table class="plan-table">
           <thead>
@@ -90,8 +114,8 @@
             </tr>
             <tr>
               <th scope="row">Push</th>
-              <td>Text push</td>
-              <td>Text + screenshot push</td>
+              <td>Text push (Bark or webhook)</td>
+              <td>Text + screenshot push (Bark or webhook)</td>
             </tr>
             <tr>
               <th scope="row">Usage history</th>
@@ -122,7 +146,7 @@
         <li>Install the free plugin in Cursor or Grok Bot — it gives the bot the dispatch playbook.</li>
         <li>Install the Windows Helper (email for the installer; after Pro, <a href="/cc-helper/success/">claim your key</a>) and keep the tray running.</li>
         <li>Ask the bot to dispatch: it writes a job into <code>inbox\</code>; Claude Code runs on your PC with your API key (DeepSeek or others).</li>
-        <li>Watch the panel — or walk away. Pro sends a phone link when something needs approve/cancel (optional screenshot); budget caps and stall auto-stop keep spend in check; up to 3 parallel jobs with auto-retry.</li>
+        <li>Watch the panel — or walk away. Pro sends a phone link when a pay or submit step needs approve/cancel, and can attach a screenshot via Bark; budget caps and stall auto-stop keep spend in check; up to 3 parallel jobs with auto-retry.</li>
       </ol>
 
       <div class="note">
@@ -136,7 +160,7 @@
       <p>Bot Bridge CC Helper is a product of Moying Studio (东莞市常平创客汇网络技术工作室，个体工商户). It is an independent tool: not made by, endorsed by, or affiliated with Anthropic (Claude, Claude Code) or Anysphere (Cursor). The free marketplace plugin is MIT-licensed software provided as-is. The Windows desktop Helper and the Pro license are sold separately on this page: Pro is a $29/year early-bird subscription processed by Waffo; your Pro key is issued instantly on the <a href="/cc-helper/success/">claim page</a> after payment, and the desktop installer is delivered on request by email. You are responsible for how you use Claude Code and any API spend on your own machine. We may update these terms on this page.</p>
 
       <h2 id="privacy">Privacy (Bot Bridge CC Helper)</h2>
-      <p>This page is separate from the calligraphy generator’s privacy policy. The free Cursor/Grok Bot plugin does not collect or sell your Marketplace usage data through us. The desktop Helper runs on your Windows PC: task inbox, progress, and license checks stay on your machine unless you turn on optional notify / remote-approval channels that you configure yourself. Remote-approval tokens are short-lived (24h) and single-use. We do not operate a cloud that stores your Claude Code transcripts for this product. If you email us for support, we keep that correspondence only to help you. Payments are processed by Waffo; we receive an order webhook (email, order id, product) that lets us issue your Pro key automatically, and the claim page only looks that key up for the email and order id you type in.</p>
+      <p>This page is separate from the calligraphy generator’s privacy policy. The free Cursor/Grok Bot plugin does not collect or sell your Marketplace usage data through us. The desktop Helper runs on your Windows PC: task inbox, progress, and license checks stay on your machine unless you turn on optional notify / remote-approval channels that you configure yourself (Bark or a webhook). Remote-approval tokens are short-lived (24h) and single-use. We do not operate a cloud that stores your Claude Code transcripts for this product. If you email us for support, we keep that correspondence only to help you. Payments are processed by Waffo; we receive an order webhook (email, order id, product) that lets us issue your Pro key automatically, and the claim page only looks that key up for the email and order id you type in.</p>
 
       <h2>Links</h2>
       <div class="pill-row">

@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Webcam Bridge · On-demand webcam for Cursor | Moying</title>
-  <meta name="description" content="Free Cursor thin plugin that snaps one webcam frame into your chat. Real capture is local MCP (webcam_mcp): open, one JPEG, release. No always-on tray in the free layer." />
+  <title>Webcam Bridge · One JPEG into the chat, then release the camera</title>
+  <meta name="description" content="Free plugin plus local webcam_mcp. Opens the camera, returns one JPEG into the chat, and releases the device. An in-chat photo button when MCP Apps is available. No always-on tray in the free layer." />
   <link rel="canonical" href="https://botbridge.dev/webcam" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <meta name="theme-color" content="#f7f7f5" />
+  <meta name="theme-color" content="#f4f3ef" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Bot Bridge" />
   <meta property="og:url" content="https://botbridge.dev/webcam" />
@@ -26,22 +26,26 @@
   <div class="app">
     <header class="top">
       <a class="brand" href="/">
-        <span class="brand-mark" aria-hidden="true">B</span>
-        <div>
-          <span class="brand-name">Bot Bridge</span>
-          <p>Webcam</p>
-        </div>
+        <img class="brand-logo" src="/brand/publisher.svg" alt="" width="32" height="32" />
+        <span class="brand-name">Bot Bridge</span>
       </a>
-      <a class="ghost" href="https://github.com/1019666077-bit/webcam-bridge-plugin">Free plugin →</a>
+      <nav class="nav" aria-label="Products">
+        <a href="/cc-helper/">CC Helper</a>
+        <a href="/rules/">Rules</a>
+        <a href="/webcam/" aria-current="page">Webcam</a>
+        <a href="/obsidian/">Obsidian</a>
+        <a href="/app-bridge/">App</a>
+        <a class="ghost" href="https://github.com/1019666077-bit/webcam-bridge-plugin">Free plugin</a>
+      </nav>
     </header>
 
     <main class="article">
-      <h1>Webcam Bridge</h1>
-      <p class="zh-gloss brand-line" lang="zh-Hans">Bot Bridge · 让 Agent 更好地用上你的本机能力</p>
-      <p class="lead">Give Cursor one on-demand webcam frame in the current chat. The free plugin is the Marketplace entry; real capture is a local MCP server that opens the camera, returns one JPEG, and releases the device.</p>
-      <p class="zh-gloss" lang="zh-Hans">免费插件负责说明和入口。真正抓拍是本机 MCP（webcam_mcp）：按需开摄像头，拍一帧 JPEG，拍完立刻释放。</p>
+      <p class="eyebrow">Webcam Bridge · Free</p>
+      <h1>One photo in the chat. The camera closes after the shot.</h1>
+      <p class="lead">The free plugin tells the agent when to take a frame. Capture itself is a local MCP server, <code>webcam_mcp</code>: it opens camera index 0, returns one JPEG into the current chat, and releases the device before the tool returns.</p>
+      <p class="zh-gloss" lang="zh-Hans">免费插件告诉 Agent 何时拍。真正抓拍是本机 MCP（webcam_mcp）：打开摄像头 0，回一帧 JPEG，工具返回前释放设备。</p>
 
-      <p class="audience"><strong>For Cursor and Grok Bot</strong> (Agent / Bot plugins). · <strong>面向 Cursor 与 Grok Bot</strong>（Agent / Bot 插件）。</p>
+      <p class="meta-line"><span>For Cursor and Grok Bot</span><span>Still frame only in this plugin</span><span>No always-on tray</span></p>
 
       <div class="cta-row">
         <a class="cta" href="https://github.com/1019666077-bit/webcam-bridge-plugin">Get the free plugin</a>
@@ -51,10 +55,24 @@
       <p class="caption">Marketplace plugin is MIT and free. On-demand snap (command or in-chat MCP Apps button) is the free path. Pro installer / system tray are planned later — placeholder only.</p>
 
       <h2>What you get</h2>
-      <p><strong>Free Cursor plugin</strong> — skills, rules, and a <code>snap</code> command so the agent knows when to take one frame and how the image returns to the conversation. No <code>.exe</code>, no tray, no always-on camera process in this layer.</p>
-      <p><strong>In-chat photo button (MCP Apps).</strong> When the MCP App UI is available in the conversation, you can tap a <em>take one photo</em> control in chat — same on-demand one JPEG, then the camera is released. · 对话内可点「拍一张」按钮（MCP Apps）。</p>
-      <p><strong>Local MCP (<a href="https://github.com/1019666077-bit/webcam_mcp">webcam_mcp</a>)</strong> — Cursor starts it over stdio via <a href="https://docs.astral.sh/uv/">uv</a>. <code>take_photo</code> opens camera index <code>0</code>, returns one JPEG into the chat, and releases the device before the tool returns.</p>
-      <p><strong>Pro (later)</strong> — packaged installer / system tray. Not for sale on this page yet.</p>
+      <ul class="feature-grid">
+        <li class="feature">
+          <h3>One JPEG, then release</h3>
+          <p><code>take_photo</code> opens the camera, returns one JPEG, and releases it before the tool returns. The camera stays closed until that call. This plugin’s playbook is still frames only.</p>
+        </li>
+        <li class="feature">
+          <h3>Snap command or an in-chat button</h3>
+          <p>Ask for a photo, or run <code>snap</code>. When MCP Apps is available, a <em>take one photo</em> control in the chat does the same shot.</p>
+        </li>
+        <li class="feature">
+          <h3>Local server, started by uv</h3>
+          <p>Cursor starts <a href="https://github.com/1019666077-bit/webcam_mcp">webcam_mcp</a> over stdio via <a href="https://docs.astral.sh/uv/">uv</a>. No <code>.exe</code> and no tray in the free layer.</p>
+        </li>
+        <li class="feature">
+          <h3>Pro installer is not for sale</h3>
+          <p>A packaged installer and system tray are planned later. The button on this page is a placeholder, not an offer. <code>record_video</code> exists on <code>webcam_mcp</code>; the free plugin does not use it.</p>
+        </li>
+      </ul>
 
       <h2>How a shot works</h2>
       <ol class="steps">
